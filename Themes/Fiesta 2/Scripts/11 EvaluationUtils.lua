@@ -14,7 +14,7 @@ end;
 --////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function DrawRollingNumberP2( x, y, score, horizalign, delay )
-local score_s = string.format("%03d",score);
+local score_s = string.format("%06d",score);
 local digits = {};
 local len = string.len(score_s);
 

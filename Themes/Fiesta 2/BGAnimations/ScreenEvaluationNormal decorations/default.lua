@@ -49,15 +49,21 @@ t[#t+1] = LoadActor( THEME:GetPathG("","ScreenEvaluation/_maxcombo.png") )..{
 	OffCommand=cmd(finishtweening;linear,.25;rotationx,90);
 };
 
-t[#t+1] = LoadActor( THEME:GetPathG("","ScreenEvaluation/_total.png") )..{
+t[#t+1] = LoadActor( THEME:GetPathG("","ScreenEvaluation/_pscore.png") )..{
 	InitCommand=cmd(basezoom,.66);
 	OnCommand=cmd(x,SCREEN_CENTER_X;y,init_pos+delta*6;rotationx,90;sleep,init_sleep*6;linear,.25;rotationx,0);
 	OffCommand=cmd(finishtweening;linear,.25;rotationx,90);
 };
 
-t[#t+1] = LoadActor( THEME:GetPathG("","ScreenEvaluation/_cal.png") )..{
+t[#t+1] = LoadActor( THEME:GetPathG("","ScreenEvaluation/_total.png") )..{
 	InitCommand=cmd(basezoom,.66);
 	OnCommand=cmd(x,SCREEN_CENTER_X;y,init_pos+delta*7;rotationx,90;sleep,init_sleep*7;linear,.25;rotationx,0);
+	OffCommand=cmd(finishtweening;linear,.25;rotationx,90);
+};
+
+t[#t+1] = LoadActor( THEME:GetPathG("","ScreenEvaluation/_cal.png") )..{
+	InitCommand=cmd(basezoom,.66);
+	OnCommand=cmd(x,SCREEN_CENTER_X;y,init_pos+delta*8;rotationx,90;sleep,init_sleep*7;linear,.25;rotationx,0);
 	OffCommand=cmd(finishtweening;linear,.25;rotationx,90);
 };
 

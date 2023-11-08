@@ -12,6 +12,7 @@ local p2_grade = 21; -- Grade_Fail
 
 local bads = { PLAYER_1 = false, PLAYER_2 = false };
 local stage_break = { PLAYER_1 = false, PLAYER_2 = false };
+local misscount = { PLAYER_1 = 99, PLAYER_2 = 99 };
 
 if p1_joined then
 	local p1_pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_1)
@@ -22,7 +23,9 @@ if p1_joined then
 	if p1_pss:GetReachedLifeZero() then
 		stage_break[PLAYER_1] = true;
 	end
+	misscount[PLAYER_1] = p1_pss:GetTapNoteScores('TapNoteScore_Miss') + p1_pss:GetTapNoteScores('TapNoteScore_CheckpointMiss');
 end;
+
 if p2_joined then
 	local p2_pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_2)
 	p2_grade = p2_pss:GetGradeInt()+1
@@ -32,6 +35,7 @@ if p2_joined then
 	if p2_pss:GetReachedLifeZero() then
 		stage_break[PLAYER_2] = true;
 	end
+	misscount[PLAYER_2] = p2_pss:GetTapNoteScores('TapNoteScore_Miss') + p2_pss:GetTapNoteScores('TapNoteScore_CheckpointMiss');
 end;
 
 if p1_grade == 21 then
@@ -56,6 +60,18 @@ local function GradeActor(pn)
 	if grade == "G" and bads[pn] then grade = "S" end;
 	
 	local condition = stage_break[pn] and "B" or "R"
+
+	if grade == "A" and condition == "R" then
+		if misscount[pn] <= 5 then 
+			grade = "A_Gold"; --marvelous game
+		elseif misscount[pn] <= 10 then 
+			grade = "A_Blue"; --talented game
+		elseif misscount[pn] <= 20 then 
+			grade = "A"; --fair game
+		elseif misscount[pn] >= 20 then 
+			grade = "A_Red"; --rough game
+		end;
+	end;
 	
 	local t = Def.ActorFrame {};
 	t[#t+1] = LoadActor( THEME:GetPathG("","ScreenEvaluation/"..condition.."_"..grade..".png") )..{
