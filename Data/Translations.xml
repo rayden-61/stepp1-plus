@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+# This file is UTF-8; to be readable, edit it in an editor capable
+# of UTF-8, such as Notepad in Windows 2000 and later.
+# Also it's best to view this with a font that supports various UTF-8
+# characters, as opposed to monospaced fonts.
+#
+# Six keywords: TitleFrom, ArtistFrom, SubtitleFrom, TitleTo,
+# ArtistTo, SubtitleTo.
+#
+# From lines are regular expressions.  If all From lines for a set
+# are matched, all To lines are replaced.
+#
+# All lines, by default, must match the entire line; for example,
+# "Foo" matches only "Foo", not "Foobar".  Matches are case-insensitive.
+#
+# Matches are checked in the order given in this file; more than one
+# set may match a single song.
+#
+# Courses are matched by title only.
+#
+# Note that changes to this file are only applied to songs when they are
+# first loaded.  Delete the files in the "Cache" directory after making
+# changes.
+-->
+<Translations>
+	<Songs>
+	</Songs>
+	<Courses>
+	</Courses>
+	<Groups>
+	</Groups>
+</Translations>

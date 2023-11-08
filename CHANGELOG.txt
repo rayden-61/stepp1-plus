@@ -1,0 +1,31 @@
+StepP1 1.0.3 Release - June 9th 2023:
+- More small UI changes by SofiaXY to closer match the original game
+- Fixed letter grades displaying when not supposed to on the song select screen
+- Fixed right player's calories numbers being out of order on the evaluation screen
+- Removed StepF2 specific videos to reduce total storage space
+
+StepP1 1.0.2 Release - December 29th 2022:
+- Default video renderer has changed to DirectX, fixes freezes on some computers when attempting to change video settings
+- Fixed Random channel not showing up
+	- Due to RageFile limitations, the Screenshots folder was removed in order for the game to read RandomSongs once again
+- Added letter grades to be displayed with personal scores, machine scores and on the step chart list
+	- Due to high score limitations in not being able to save stage break conditions, all grades will be colored
+	- Some charts might display scores from other charts, this is due to them sharing the same difficulty and details and roots back to being a StepMania issue. Sorry for any inconveniences
+- Fixed alignment issues with certain UI elements when running the game in 4:3
+- New step chart artist label added while loading into gameplay (SofiaXY)
+- New StepP1 logo which better resembles the original Event graphic (SofiaXY)
+- New proper Andamiro logo screen which matches more the original games (SofiaXY)
+- Added machine name to evaluation (name can be modified in Themes\Fiesta 2\BGAnimations\ScreenEvaluationNormal decorations\default.lua) (SofiaXY)
+- Judgment and combo animations adjusted to be more accurate to the original games (SofiaXY)
+- Several modifier icons were tweaked and adjusted for better readibility (SofiaXY)
+- Player badges profile pictures restored to stock Prime ones (SofiaXY)
+- Added initial Portuguese translation and updated English and Spanish to correct mistakes (SHRMP0)
+
+StepP1 1.0.1 Release - December 27th 2022:
+- Hold note release tolerance has been decreased, the issue should be fully fixed now
+- Add SSS and stage break broken grades, blue S has kept for scores with Bads
+- Option to enable input debounce, which fixes the infamous "button presses twice at once" and helps avoiding random bads
+- All noteskins are now in HD
+- Level font rendering error has been fixed
+- Chart and stepmaker display while loading into gameplay has been restored (originally cut feature)
+- Check the Intro folder for a surprise!
