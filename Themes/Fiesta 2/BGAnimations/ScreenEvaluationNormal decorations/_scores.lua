@@ -38,6 +38,7 @@ if GAMESTATE:IsSideJoined(PLAYER_1) then
 	local bads = curstats:GetTapNoteScores('TapNoteScore_W5');
 	local misses = curstats:GetTapNoteScores('TapNoteScore_Miss') + curstats:GetTapNoteScores('TapNoteScore_CheckpointMiss');
 	local maxcombo = curstats:MaxCombo();
+	local stagebreak = curstats:GetReachedLifeZero();
 	
 	local notestotal = perfects + greats + goods + bads + misses;
 	if notestotal <= 1 then notestotal = 1 end;
@@ -67,6 +68,18 @@ if GAMESTATE:IsSideJoined(PLAYER_1) then
 		(pscore >= 550000 and "(C)")	or
 		(pscore >= 450000 and "(D)") 	or
 		"(F)"
+	);
+	local plate = "";
+	plate = (
+		(stagebreak and "")	or 
+		(misses >= 21 and "Rough Game")	or 
+		(misses >= 11 and "Fair Game")	or
+		(misses >= 6 and "Talented Game")	or
+		(misses >= 1 and "Marvelous Game")	or
+		(bads >= 1 and "Superb Game")	or 
+		(goods >= 1 and "Extreme Game")	or 
+		(greats >= 1 and "Ultimate Game")	or
+		"Perfect Game"
 	);
 
 	t[#t+1] = DrawRollingNumberP1( WideScale(66, 115), init_pos, 	perfects, 'HorizAlign_Left', 2 )..{InitCommand=cmd(zoom,.84);};
@@ -84,6 +97,8 @@ if GAMESTATE:IsSideJoined(PLAYER_1) then
 	t[#t+1] = LoadFont("_karnivore lite white 20px")..{ InitCommand=cmd(settext,".";y,init_pos+delta*8;x,WideScale(101, 150);zoom,.84;diffusealpha,0;sleep,2.64;diffusealpha,1); };
 	--p. grade
 	t[#t+1] = LoadFont("_karnivore lite white 20px")..{ InitCommand=cmd(settext,pgrade;y,init_pos+delta*6;x,WideScale(171, 220);zoom,.84;diffusealpha,0;sleep,4.2;diffusealpha,1); };
+	--plate
+	t[#t+1] = LoadFont("_karnivore lite white 20px")..{ InitCommand=cmd(settext,plate;y,init_pos-delta;x,WideScale(171, 220);zoom,.84;diffusealpha,0;sleep,4.2;diffusealpha,1); };
 
 end;
 
@@ -95,6 +110,7 @@ if GAMESTATE:IsSideJoined(PLAYER_2) then
 	local bads = curstats:GetTapNoteScores('TapNoteScore_W5');
 	local misses = curstats:GetTapNoteScores('TapNoteScore_Miss') + curstats:GetTapNoteScores('TapNoteScore_CheckpointMiss');
 	local maxcombo = curstats:MaxCombo();
+	local stagebreak = curstats:GetReachedLifeZero();
 	
 	local notestotal = perfects + greats + goods + bads + misses;
 	if notestotal <= 1 then notestotal = 1 end;
@@ -125,6 +141,18 @@ if GAMESTATE:IsSideJoined(PLAYER_2) then
 		(pscore >= 450000 and "(D)") 	or
 		"(F)"
 	);
+	local plate = "";
+	plate = (
+		(stagebreak and "")	or 
+		(misses >= 21 and "Rough Game")	or 
+		(misses >= 11 and "Fair Game")	or
+		(misses >= 6 and "Talented Game")	or
+		(misses >= 1 and "Marvelous Game")	or
+		(bads >= 1 and "Superb Game")	or 
+		(goods >= 1 and "Extreme Game")	or 
+		(greats >= 1 and "Ultimate Game")	or
+		"Perfect Game"
+	);
 	
 	t[#t+1] = DrawRollingNumberP1( SCREEN_RIGHT-WideScale(66, 115), init_pos, 	perfects, 'HorizAlign_Right', 2 )..{InitCommand=cmd(zoom,.84);};
 	t[#t+1] = DrawRollingNumberP1( SCREEN_RIGHT-WideScale(66, 115), init_pos+delta, greats, 'HorizAlign_Right', 2.08 )..{InitCommand=cmd(zoom,.84);};
@@ -141,6 +169,8 @@ if GAMESTATE:IsSideJoined(PLAYER_2) then
 	t[#t+1] = LoadFont("_karnivore lite white 20px")..{ InitCommand=cmd(settext,".";y,init_pos+delta*8;x,SCREEN_RIGHT-WideScale(101, 150);zoom,.84;diffusealpha,0;sleep,2.64;diffusealpha,1); };
 	--p. grade
 	t[#t+1] = LoadFont("_karnivore lite white 20px")..{ InitCommand=cmd(settext,pgrade;y,init_pos+delta*6;x,SCREEN_RIGHT-WideScale(171, 220);zoom,.84;diffusealpha,0;sleep,4.2;diffusealpha,1); };
+	--plate
+	t[#t+1] = LoadFont("_karnivore lite white 20px")..{ InitCommand=cmd(settext,plate;y,init_pos-delta;x,SCREEN_RIGHT-WideScale(171, 220);zoom,.84;diffusealpha,0;sleep,4.2;diffusealpha,1); };
 
 end;
 
