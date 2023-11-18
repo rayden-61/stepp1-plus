@@ -63,10 +63,6 @@ local function PlayerName( Player )
 			Name = "heart";
 			InitCommand=cmd(x,26;y,7);
 		};
-		LoadActor( GetAvatarFromProfile( Player ) )..{
-			OnCommand=cmd(x,108;zoom,.21);
-		};
-	
 	};
 	return t;
 end;
