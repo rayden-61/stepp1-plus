@@ -19,6 +19,14 @@ local function GetPersonalGrade(pn, i)
 			local Grade = (GradeTier == "Grade_Failed" and "F" or GradeLetters[GradeTier])
 			if Grade == "G" and HighScores[i]:GetTapNoteScore('TapNoteScore_W5') > 0 then
 				return "S"
+			elseif Grade == "A" and ( HighScores[i]:GetTapNoteScore('TapNoteScore_Miss') + HighScores[i]:GetTapNoteScore('TapNoteScore_CheckpointMiss') ) > 20 then
+				return "A_Red"
+			elseif Grade == "A" and ( HighScores[i]:GetTapNoteScore('TapNoteScore_Miss') + HighScores[i]:GetTapNoteScore('TapNoteScore_CheckpointMiss') ) > 10 then
+				return "A"
+			elseif Grade == "A" and ( HighScores[i]:GetTapNoteScore('TapNoteScore_Miss') + HighScores[i]:GetTapNoteScore('TapNoteScore_CheckpointMiss') ) > 5 then
+				return "A_Blue"
+			elseif Grade == "A" and ( HighScores[i]:GetTapNoteScore('TapNoteScore_Miss') + HighScores[i]:GetTapNoteScore('TapNoteScore_CheckpointMiss') ) <= 5 then
+				return "A_Gold"
 			else
 				return Grade
 			end
@@ -38,6 +46,14 @@ local function GetMachineGrade(pn, i)
 			local Grade = (GradeTier == "Grade_Failed" and "F" or GradeLetters[GradeTier])
 			if Grade == "G" and HighScores[i]:GetTapNoteScore('TapNoteScore_W5') > 0 then
 				return "S"
+			elseif Grade == "A" and ( HighScores[i]:GetTapNoteScore('TapNoteScore_Miss') + HighScores[i]:GetTapNoteScore('TapNoteScore_CheckpointMiss') ) > 20 then
+				return "A_Red"
+			elseif Grade == "A" and ( HighScores[i]:GetTapNoteScore('TapNoteScore_Miss') + HighScores[i]:GetTapNoteScore('TapNoteScore_CheckpointMiss') ) > 10 then
+				return "A"
+			elseif Grade == "A" and ( HighScores[i]:GetTapNoteScore('TapNoteScore_Miss') + HighScores[i]:GetTapNoteScore('TapNoteScore_CheckpointMiss') ) > 5 then
+				return "A_Blue"
+			elseif Grade == "A" and ( HighScores[i]:GetTapNoteScore('TapNoteScore_Miss') + HighScores[i]:GetTapNoteScore('TapNoteScore_CheckpointMiss') ) <= 5 then
+				return "A_Gold"
 			else
 				return Grade
 			end

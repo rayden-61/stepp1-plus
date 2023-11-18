@@ -13,14 +13,29 @@ t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/preview_frame") )..{
 }
 
 -- Frame
-t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/preview_frame") )..{
-	InitCommand=cmd(blend,'BlendMode_Add';zoom,.66;draworder,-1);
+t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/songprev_frame") )..{
+	InitCommand=cmd(blend,'BlendMode_Add';zoom,.66,draworder,-1);
 	OnCommand=cmd(stoptweening;sleep,.74;queuecommand,'Loop');
-	LoopCommand=cmd(stoptweening;diffusealpha,0;zoomx,.66;linear,.8;zoomx,.5;diffusealpha,.25;linear,.8;zoomx,.66;diffusealpha,0;queuecommand,'Loop');
+	LoopCommand=cmd(stoptweening;diffusealpha,0;zoomx,.6;linear,.8;zoomx,.5;diffusealpha,.5;linear,.8;zoomx,.6;diffusealpha,0;queuecommand,'Loop');
 	CurrentSongChangedMessageCommand=cmd(stoptweening;diffusealpha,0;sleep,.74;queuecommand,'Loop');
 	GoBackSelectingGroupMessageCommand=cmd(stoptweening;diffusealpha,0);
 	StartSelectingSongMessageCommand=cmd(stoptweening;sleep,.74;queuecommand,'Loop');
 	GoBackSelectingSongMessageCommand=cmd(stoptweening;playcommand,'Loop');
+	StepsChosenMessageCommand=cmd(stoptweening;diffusealpha,0);
+	StartSelectingStepsMessageCommand=cmd(stoptweening;diffusealpha,0);
+	StepsPreselectedCancelledMessageCommand=cmd(stoptweening;playcommand,'Loop');
+	OffCommand=cmd(stoptweening;visible,false);
+}
+
+-- Frame
+t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/preview_frame") )..{
+	InitCommand=cmd(blend,'BlendMode_Add';zoom,.66;draworder,1);
+	OnCommand=cmd(stoptweening;diffusealpha,0);
+	LoopCommand=cmd(stoptweening;diffusealpha,0;zoomx,.6;linear,.8;zoomx,.5;diffusealpha,.5;linear,.8;zoomx,.6;diffusealpha,0;queuecommand,'Loop');
+	CurrentSongChangedMessageCommand=cmd(stoptweening;diffusealpha,0);
+	GoBackSelectingGroupMessageCommand=cmd(stoptweening;diffusealpha,0);
+	StartSelectingStepsMessageCommand=cmd(stoptweening;queuecommand,'Loop');
+	GoBackSelectingSongMessageCommand=cmd(stoptweening;diffusealpha,0);
 	StepsChosenMessageCommand=cmd(stoptweening;diffusealpha,0);
 	StepsPreselectedCancelledMessageCommand=cmd(stoptweening;playcommand,'Loop');
 	OffCommand=cmd(stoptweening;visible,false);
@@ -149,101 +164,6 @@ elseif nPlayersJoined == 2 then
 	
 	t[#t+1] =h;
 end;
-----------------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------
--- UCS STUFF
-local ucs = Def.ActorFrame {
-	OnCommand=cmd(stoptweening;visible,false);
-	PreviewChangedMessageCommand=cmd(stoptweening;visible,false);
-	UpdateMessageCommand=function(self)
-		local bIsUCSChannel = false;
-		if SCREENMAN:GetTopScreen():GetCurrentGroup() == "SO_UCS" then
-			bIsUCSChannel = true;
-		end;
-		
-		local song = GAMESTATE:GetCurrentSong();
-		local group = GAMESTATE:GetCurrentSong():GetGroupName();
-		
-		local this = self:GetChildren();
-		
-		--if( bIsUCSChannel or group == "06-PRO~PRO2" or group == "07-INFINITY" or group == "19-STEPF2" )then
-		if true then
-			self:visible(true);
-			if GAMESTATE:IsSideJoined(PLAYER_1) then
-				local text = GAMESTATE:GetCurrentSteps(PLAYER_1):GetAuthorCredit();
-				if string.len(text) >= 38 then
-					text = string.sub(text,1,35);
-					text = text .. "...";
-				end;
-				this.CreditP1Side:settext( text );
-				this.CreditP1Side:maxwidth(216);
-			end;
-			if GAMESTATE:IsSideJoined(PLAYER_2) then
-				local text = GAMESTATE:GetCurrentSteps(PLAYER_2):GetAuthorCredit();
-				if string.len(text) >= 38 then
-					text = string.sub(text,1,35);
-					text = text .. "...";
-				end;
-				this.CreditP2Side:settext( text );
-				this.CreditP2Side:maxwidth(216);
-			end;
-		else
-			-- check for ucs in the charts
-			local bUCSChartIsSelectec = false;
-			if GAMESTATE:IsSideJoined(PLAYER_1) then
-				local label = GAMESTATE:GetCurrentSteps(PLAYER_1):GetLabel();
-				if label == "UCS" or label == "OUCS" then
-					this.CreditP1Side:settext( GAMESTATE:GetCurrentSteps(PLAYER_1):GetAuthorCredit() );
-					this.CreditP1Side:maxwidth(300);
-					bUCSChartIsSelectec = true;
-				end;
-			end;
-			if GAMESTATE:IsSideJoined(PLAYER_2) then
-				local label = GAMESTATE:GetCurrentSteps(PLAYER_2):GetLabel();
-				if label == "UCS" or label == "OUCS" then
-					this.CreditP2Side:settext( GAMESTATE:GetCurrentSteps(PLAYER_2):GetAuthorCredit() );
-					this.CreditP2Side:maxwidth(300);
-					bUCSChartIsSelectec = true;
-				end;
-			end;
-			
-			if not bUCSChartIsSelectec then
-				self:visible(false);
-				this.CreditP1Side:settext("");
-				this.CreditP2Side:settext("");
-			else
-				self:visible(true);
-			end;
-		end;
-	end;
-	ChangeStepsMessageCommand=cmd(playcommand,"Update");
-	StartSelectingStepsMessageCommand=cmd(playcommand,"Update");
-	StartSelectingSongMessageCommand=cmd(stoptweening;visible,false);
-	GoBackSelectingGroupMessageCommand=cmd(stoptweening;visible,false);
-	GoBackSelectingSongMessageCommand=cmd(stoptweening;visible,false);
-	OffCommand=cmd(stoptweening;visible,false);
-}
-
-ucs[#ucs+1] = Def.Quad {
-	InitCommand=cmd(y,-81;scaletoclipped,310,15;diffuse,0,0,0,.6);
-};
-
---[[
-ucs[#ucs+1] = LoadFont("BPM")..{
-	OnCommand=cmd(stoptweening;y,-100;zoom,.5;shadowlength,0;settext,"Steps by");
-}]]--
-
-ucs[#ucs+1] = LoadFont("SongTitle")..{
-	Name="CreditP1Side";
-	OnCommand=cmd(stoptweening;y,-82;x,-150;zoom,.5;horizalign,left;shadowlength,0);
-};
-
-ucs[#ucs+1] = LoadFont("SongTitle")..{
-	Name="CreditP2Side";
-	OnCommand=cmd(stoptweening;y,-82;x,150;zoom,.5;horizalign,right;shadowlength,0);
-};
-
-t[#t+1] = ucs;
 
 -- Contador
 t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/_counter_bg") )..{
@@ -257,44 +177,36 @@ t[#t+1] = Def.ActorFrame {
 		local index = SCREENMAN:GetTopScreen():GetWheelCurrentIndex()+1;
 		local numitems = SCREENMAN:GetTopScreen():GetWheelNumItems();
 		
-		local total_d1 = self:GetChild("TOTAL_D1");
-		local total_d2 = self:GetChild("TOTAL_D2");
 		local total_d3 = self:GetChild("TOTAL_D3");
-		local total_d4 = self:GetChild("TOTAL_D4");
-		local curindex_d1 = self:GetChild("CURINDEX_D1");
-		local curindex_d2 = self:GetChild("CURINDEX_D2");
+		local total_d2 = self:GetChild("TOTAL_D2");
+		local total_d1 = self:GetChild("TOTAL_D1");
 		local curindex_d3 = self:GetChild("CURINDEX_D3");
-		local curindex_d4 = self:GetChild("CURINDEX_D4");
+		local curindex_d2 = self:GetChild("CURINDEX_D2");
+		local curindex_d1 = self:GetChild("CURINDEX_D1");
 		
-		if numitems < 9999 then
-			local total_milhares = math.floor(numitems/1000)*1000;
-			local total_centenas = math.floor((numitems - total_milhares)/100)*100;
-			local total_decenas = math.floor((numitems - total_milhares - total_centenas)/10)*10;
-			local total_unidad = math.floor(numitems - total_milhares - total_centenas - total_decenas);
+		if numitems < 999 then
+			local total_centenas = math.floor(numitems/100)*100;
+			local total_decenas = math.floor((numitems - total_centenas)/10)*10;
+			local total_unidad = math.floor(numitems - total_centenas - total_decenas);
 			
-			total_d4:setstate( math.floor(total_milhares/1000) );
 			total_d3:setstate( math.floor(total_centenas/100) );
 			total_d2:setstate( math.floor(total_decenas/10) );
 			total_d1:setstate( math.floor(total_unidad) );
 		else
-			total_d4:setstate( 9 );
 			total_d3:setstate( 9 );
 			total_d2:setstate( 9 );
 			total_d1:setstate( 9 );
 		end;
 		
-		if index < 9999 then
-			local curindex_milhares = math.floor(index/1000)*1000;
-			local curindex_centenas = math.floor((index - curindex_milhares)/100)*100;
-			local curindex_decenas = math.floor((index - curindex_milhares - curindex_centenas)/10)*10;
-			local curindex_unidad = math.floor(index - curindex_milhares - curindex_centenas - curindex_decenas);
+		if index < 999 then
+			local curindex_centenas = math.floor(index/100)*100;
+			local curindex_decenas = math.floor((index - curindex_centenas)/10)*10;
+			local curindex_unidad = math.floor(index - curindex_centenas - curindex_decenas);
 			
-			curindex_d4:setstate( math.floor(curindex_milhares/1000) );
 			curindex_d3:setstate( math.floor(curindex_centenas/100) );
 			curindex_d2:setstate( math.floor(curindex_decenas/10) );
 			curindex_d1:setstate( math.floor(curindex_unidad) );
 		else
-			curindex_d4:setstate( 9 );
 			curindex_d3:setstate( 9 );
 			curindex_d2:setstate( 9 );
 			curindex_d1:setstate( 9 );
@@ -305,36 +217,28 @@ t[#t+1] = Def.ActorFrame {
 			InitCommand=cmd(y,1;basezoom,0.67);
 		};
 		LoadActor( THEME:GetPathG("","ScreenSelectMusic/SongIndexNumber 10x1") )..{
-			Name="TOTAL_D4";
-			InitCommand=cmd(pause;x,8;basezoom,.66;setstate,2);
-		};
-		LoadActor( THEME:GetPathG("","ScreenSelectMusic/SongIndexNumber 10x1") )..{
 			Name="TOTAL_D3";
-			InitCommand=cmd(pause;x,16;basezoom,.66;setstate,2);
+			InitCommand=cmd(pause;x,10;basezoom,.66;setstate,2);
 		};
 		LoadActor( THEME:GetPathG("","ScreenSelectMusic/SongIndexNumber 10x1") )..{
 			Name="TOTAL_D2";
-			InitCommand=cmd(pause;x,24;basezoom,.66);
+			InitCommand=cmd(pause;x,18;basezoom,.66);
 		};
 		LoadActor( THEME:GetPathG("","ScreenSelectMusic/SongIndexNumber 10x1") )..{
 			Name="TOTAL_D1";
-			InitCommand=cmd(pause;x,32;basezoom,.66);
-		};
-		LoadActor( THEME:GetPathG("","ScreenSelectMusic/SongIndexNumber 10x1") )..{
-			Name="CURINDEX_D4";
-			InitCommand=cmd(pause;x,-32;basezoom,.66);
+			InitCommand=cmd(pause;x,26;basezoom,.66);
 		};
 		LoadActor( THEME:GetPathG("","ScreenSelectMusic/SongIndexNumber 10x1") )..{
 			Name="CURINDEX_D3";
-			InitCommand=cmd(pause;x,-24;basezoom,.66);
+			InitCommand=cmd(pause;x,-26;basezoom,.66);
 		};
 		LoadActor( THEME:GetPathG("","ScreenSelectMusic/SongIndexNumber 10x1") )..{
 			Name="CURINDEX_D2";
-			InitCommand=cmd(pause;x,-16;basezoom,.66);
+			InitCommand=cmd(pause;x,-18;basezoom,.66);
 		};
 		LoadActor( THEME:GetPathG("","ScreenSelectMusic/SongIndexNumber 10x1") )..{
 			Name="CURINDEX_D1";
-			InitCommand=cmd(pause;x,-8;basezoom,.66);
+			InitCommand=cmd(pause;x,-10;basezoom,.66);
 		};
 	};
 }
@@ -345,8 +249,8 @@ t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/_song_info_bg") )..{
 
 t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/_side_to_left") )..{
 	InitCommand=cmd(blend,'BlendMode_Add';basezoom,0.67;horizalign,right;x,-148);
-	StartSelectingStepsMessageCommand=cmd(stoptweening;x,-155;diffusealpha,0;zoom,0;linear,.1;zoom,1;x,-148;diffusealpha,1;queuecommand,'Loop');
-	GoBackSelectingSongMessageCommand=cmd(stoptweening;x,-148;diffusealpha,1;zoom,1;linear,.1;zoom,0;x,-155;diffusealpha,0);
+	StartSelectingStepsMessageCommand=cmd(stoptweening;sleep,.15;x,-155;diffusealpha,0;zoom,0;linear,.0;zoom,1;x,-148;diffusealpha,1;queuecommand,'Loop');
+	GoBackSelectingSongMessageCommand=cmd(stoptweening;x,-148;diffusealpha,1;zoom,1;linear,.0;zoom,0;x,-155;diffusealpha,0);
 	OffCommand=cmd(stoptweening;x,-148;diffusealpha,1;zoom,1;linear,.2;zoom,0;x,-155;diffusealpha,0);
 	OnCommand=cmd(diffusealpha,0;zoom,0);
 	LoopCommand=cmd(stoptweening;diffusealpha,1;linear,.5;diffusealpha,.5;linear,.5;diffusealpha,1;queuecommand,'Loop');
@@ -357,8 +261,8 @@ t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/_side_to_left") )..{
 
 t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/_side_to_left") )..{
 	InitCommand=cmd(blend,'BlendMode_Add';basezoom,0.67;horizalign,right;x,148;rotationy,180);
-	StartSelectingStepsMessageCommand=cmd(stoptweening;x,155;diffusealpha,0;zoom,0;linear,.1;zoom,1;x,148;diffusealpha,1;queuecommand,'Loop');
-	GoBackSelectingSongMessageCommand=cmd(stoptweening;x,148;diffusealpha,1;zoom,1;linear,.1;zoom,0;x,155;diffusealpha,0);
+	StartSelectingStepsMessageCommand=cmd(stoptweening;sleep,.15;x,155;diffusealpha,0;zoom,0;linear,.0;zoom,1;x,148;diffusealpha,1;queuecommand,'Loop');
+	GoBackSelectingSongMessageCommand=cmd(stoptweening;x,148;diffusealpha,1;zoom,1;linear,.0;zoom,0;x,155;diffusealpha,0);
 	OffCommand=cmd(stoptweening;x,148;diffusealpha,1;zoom,1;linear,.2;zoom,0;x,155;diffusealpha,0);
 	OnCommand=cmd(diffusealpha,0;zoom,0);
 	LoopCommand=cmd(stoptweening;diffusealpha,1;linear,.5;diffusealpha,.5;linear,.5;diffusealpha,1;queuecommand,'Loop');
@@ -368,23 +272,27 @@ t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/_side_to_left") )..{
 }
 
 t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/_arrow_to_left") )..{
-	InitCommand=cmd(blend,'BlendMode_Add';zoom,0.67;x,-182;y,3);
-	OnCommand=cmd(playcommand,'Loop');
-	LoopCommand=cmd(stoptweening;diffusealpha,1;linear,.5;diffusealpha,.5;linear,.5;diffusealpha,1;queuecommand,'Loop');
-	PreviousSongMessageCommand=cmd(stoptweening;diffusealpha,1;x,-182;linear,.15;x,-202;linear,.15;x,-182;queuecommand,'Loop');
-	NextSongMessageCommand=cmd(stoptweening;diffusealpha,1;sleep,.3;queuecommand,'Loop');
-	StartSelectingStepsMessageCommand=cmd(stoptweening;diffusealpha,0);
-	GoBackSelectingSongMessageCommand=cmd(stoptweening;playcommand,'Loop');
+	InitCommand=cmd(blend,'BlendMode_Add';zoom,0.67;x,-182;y,-1);
+	OnCommand=cmd(finishtweening;x,-160;y,50;zoom,0;linear,.3;x,-182;y,-1;zoom,.67;queuecommand,'Loop');
+	LoopCommand=cmd(finishtweening;diffusealpha,1;linear,.5;diffusealpha,.5;linear,.5;diffusealpha,1;queuecommand,'Loop');
+	PreviousSongMessageCommand=cmd(finishtweening;diffusealpha,1;x,-182;linear,.15;x,-202;linear,.15;x,-182;queuecommand,'Loop');
+	NextSongMessageCommand=cmd(finishtweening;diffusealpha,1;sleep,.3;queuecommand,'Loop');
+	StartSelectingStepsMessageCommand=cmd(finishtweening;x,-182;zoom,0.67;linear,.15;x,-160;zoom,0;queuecommand,'Loop');
+	GoBackSelectingSongMessageCommand=cmd(finishtweening;sleep,.15;x,-160;zoom,0;linear,.15;x,-182;zoom,0.67;queuecommand,'Loop');
+	GoBackSelectingGroupMessageCommand=cmd(finishtweening;x,-182;zoom,0.67;linear,.15;x,-160;zoom,0;queuecommand,'Loop');
+	StartSelectingSongMessageCommand=cmd(finishtweening;sleep,.3;x,-160;zoom,0;linear,.15;x,-182;zoom,.67;queuecommand,'Loop');
 }
 
 t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/_arrow_to_left") )..{
-	InitCommand=cmd(blend,'BlendMode_Add';rotationz,180;zoom,0.67;x,182;y,3);
-	OnCommand=cmd(playcommand,'Loop');
-	LoopCommand=cmd(stoptweening;diffusealpha,1;linear,.5;diffusealpha,.5;linear,.5;diffusealpha,1;queuecommand,'Loop');
-	NextSongMessageCommand=cmd(stoptweening;diffusealpha,1;x,182;linear,.15;x,202;linear,.15;x,182;queuecommand,'Loop');
-	PreviousSongMessageCommand=cmd(stoptweening;diffusealpha,1;sleep,.3;queuecommand,'Loop');
-	StartSelectingStepsMessageCommand=cmd(stoptweening;diffusealpha,0);
-	GoBackSelectingSongMessageCommand=cmd(stoptweening;playcommand,'Loop');
+	InitCommand=cmd(blend,'BlendMode_Add';rotationz,180;zoom,0.67;x,182;y,-1);
+	OnCommand=cmd(finishtweening;x,160;y,50;zoom,0;linear,.3;x,182;y,-1;zoom,.67;queuecommand,'Loop');
+	LoopCommand=cmd(finishtweening;diffusealpha,1;linear,.5;diffusealpha,.5;linear,.5;diffusealpha,1;queuecommand,'Loop');
+	NextSongMessageCommand=cmd(finishtweening;diffusealpha,1;x,182;linear,.15;x,202;linear,.15;x,182;queuecommand,'Loop');
+	PreviousSongMessageCommand=cmd(finishtweening;diffusealpha,1;sleep,.3;queuecommand,'Loop');
+	StartSelectingStepsMessageCommand=cmd(finishtweening;x,182;zoom,0.67;linear,.15;x,160;zoom,0;queuecommand,'Loop');
+	GoBackSelectingSongMessageCommand=cmd(finishtweening;sleep,.15;x,160;zoom,0;linear,.15;x,182;zoom,0.67;queuecommand,'Loop');
+	GoBackSelectingGroupMessageCommand=cmd(finishtweening;x,182;zoom,0.67;linear,.15;x,160;zoom,0;queuecommand,'Loop');
+	StartSelectingSongMessageCommand=cmd(finishtweening;sleep,.3;x,160;zoom,0;linear,.15;x,182;zoom,.67;queuecommand,'Loop');
 }
 
 t[#t+1] = Def.ActorFrame {
@@ -414,7 +322,7 @@ t[#t+1] = Def.ActorFrame {
 t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/preview_frame") )..{
 	InitCommand=cmd(blend,'BlendMode_Add';zoom,.66);
 	OnCommand=cmd(stoptweening;diffusealpha,0);
-	FastLoopCommand=cmd(stoptweening;diffusealpha,0;zoomx,1;linear,.1;zoomx,.66;diffusealpha,1;linear,.1;zoomx,1;diffusealpha,0;queuecommand,'FastLoop');
+	FastLoopCommand=cmd(stoptweening;diffusealpha,0;zoomx,1;linear,.1;zoomx,.5;diffusealpha,1;linear,.1;zoomx,1;diffusealpha,0;queuecommand,'FastLoop');
 	StepsChosenMessageCommand=cmd(stoptweening;playcommand,'FastLoop');
 	StepsPreselectedCancelledMessageCommand=cmd(stoptweening;diffusealpha,0);
 	GoBackSelectingSongMessageCommand=cmd(stoptweening;diffusealpha,0);
@@ -538,7 +446,7 @@ t[#t+1] = Def.ActorFrame {
 		--song title
 		LoadFont("_myriad pro 20px")..{
 			Name="title";
-			InitCommand=cmd(stoptweening;horizalign,left;y,65;x,-148;zoom,.6;shadowlength,0;maxwidth,500);
+			InitCommand=cmd(stoptweening;horizalign,left;y,65;x,-148;zoom,.6;shadowlength,0;maxwidth,493);
 		};
 	};
 }

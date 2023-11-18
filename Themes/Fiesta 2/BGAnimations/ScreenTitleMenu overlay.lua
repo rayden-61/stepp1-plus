@@ -4,7 +4,7 @@ t[#t+1] = LoadFont("Common Bold")..{
 	InitCommand=function(self)
 		self:x(SCREEN_CENTER_X);
 		self:y(SCREEN_TOP + 40);
-		self:settext("StepMania 5 (beta4)\nBuild StepP1 V1.0.3 by xMAx\nSong pack base by NicklessGuy");
+		self:settext("StepMania 5 (beta4)\nStepP1 V1.0.0 by xMAx; 1.0.1 to 1.0.3 updates by Team CrackItUp\nSong pack base by NicklessGuy\nStepP1+ V1.0 by Rayden61\n");
 		self:skewx(-.12);
 		self:zoom(.5);
 	end;

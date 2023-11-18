@@ -109,7 +109,7 @@ local stepf2 = {
 	"testing the game, or giving suggestions or just playing this game. Special thanks to Funbox for leading his Nostalgia charts and Crevolous for",
 	"leading his Pump Pro+ charts and everyone who contributed with them. Also to the testers of SF2 and SP1 :D thank you guys!",
 	"Goodbye and thanks to everyone!! :D, xMAx",
-	"",
+	"(P.S by Rayden61: Additional credits to Team CrackItUp for 1.0.1 to 1.0.3 versions and myself for StepP1+)",
 	"",
 	"(here below I leave the credits of StepMania, thanks for this simulator!)"
 }
