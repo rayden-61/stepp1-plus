@@ -417,11 +417,10 @@ t[#t+1] = Def.ActorFrame {
 		local group = SCREENMAN:GetTopScreen():GetCurrentGroup();
 		if( group == "SO_RANDOM" ) then
 			title:settext( "???" );
-			duration:settext( "??:??" );
+			--duration:settext( "??:??" );
 		else
 			title:settext( cur_song:GetDisplayMainTitle() );
-			local songlength = cur_song:
-			duration:settext( "00:00" );
+			--duration:settext( "00:00" );
 		end;
 	end;
 	children = {
