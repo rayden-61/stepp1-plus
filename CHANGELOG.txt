@@ -1,3 +1,13 @@
+StepP1+ 1.0 Release - ??? 2023:
+- More small UI changes by SofiaXY to closer match the original game
+- Added P.Score to the Evaluation Screen, based on the most recent scoring paradigm/formula: P.Score goes from 0 to 1.000.000 for all songs, where 1.000.000 = 100% Perfects (SSS). Max Combo accounts for 5000 out of the 1.000.000 points. Each Great is worth 6/10 of a Perfect, each Good is worth 2/10 of a Perfect, each Bad is worth 1/10 of a Perfect and Miss is worth nothing.
+- Added a P.Score Grade, displayed alongside the P.Score. Possible P.Grades are F, D, C, B, A, A+, AA, AA+, AAA, AAA+, S, S+, SS, SS+, SSS, SSS+, depending on how close the P.Score is to 1.000.00.
+- Subdivided the regular A grade into 4 different grades: Gold A (A with 5 misses or less), Blue A (A with 10 misses or less), Green A (A with 20 misses or less) and Red A (A with more than 20 misses). Broken A will still be shown if the player gets a stage break.
+- The little grades on high scores that are shown on the song select screen will now be in black and white for B through F, and colored from A to SSS. The engine still doesn't support recording stage pass / stage break unfortunately, so that's the best we can do. Red A have a high probability of being a stage break.
+
+
+
+
 StepP1 1.0.3 Release - June 9th 2023:
 - More small UI changes by SofiaXY to closer match the original game
 - Fixed letter grades displaying when not supposed to on the song select screen

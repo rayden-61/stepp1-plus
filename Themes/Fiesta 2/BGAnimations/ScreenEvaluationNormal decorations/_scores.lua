@@ -50,24 +50,24 @@ if GAMESTATE:IsSideJoined(PLAYER_1) then
 		pscore = 1000000;
 	end;
 	
-	local pgrade = "(F)";
+	local pgrade = "F";
 	pgrade = (
-		(pscore >= 995000 and "(SSS+)")	or 
-		(pscore >= 990000 and "(SSS)")	or 
-		(pscore >= 985000 and "(SS+)")	or
-		(pscore >= 980000 and "(SS)")	or
-		(pscore >= 975000 and "(S+)")	or
-		(pscore >= 970000 and "(S)")	or 
-		(pscore >= 960000 and "(AAA+)")	or 
-		(pscore >= 950000 and "(AAA)")	or
-		(pscore >= 925000 and "(AA+)")	or
-		(pscore >= 900000 and "(AA)")	or
-		(pscore >= 825000 and "(A+)")	or
-		(pscore >= 750000 and "(A)")	or
-		(pscore >= 650000 and "(B)")	or
-		(pscore >= 550000 and "(C)")	or
-		(pscore >= 450000 and "(D)") 	or
-		"(F)"
+		(pscore >= 995000 and "SSS+")	or 
+		(pscore >= 990000 and "SSS")	or 
+		(pscore >= 985000 and "SS+")	or
+		(pscore >= 980000 and "SS")	or
+		(pscore >= 975000 and "S+")	or
+		(pscore >= 970000 and "S")	or 
+		(pscore >= 960000 and "AAA+")	or 
+		(pscore >= 950000 and "AAA")	or
+		(pscore >= 925000 and "AA+")	or
+		(pscore >= 900000 and "AA")	or
+		(pscore >= 825000 and "A+")	or
+		(pscore >= 750000 and "A")	or
+		(pscore >= 650000 and "B")	or
+		(pscore >= 550000 and "C")	or
+		(pscore >= 450000 and "D") 	or
+		"F"
 	);
 	local plate = "";
 	plate = (
@@ -96,9 +96,9 @@ if GAMESTATE:IsSideJoined(PLAYER_1) then
 	t[#t+1] = DrawRollingNumberP1( WideScale(66, 115), init_pos+delta*8, math.floor( kcal ), 'HorizAlign_Left', 2.64 )..{InitCommand=cmd(zoom,.84);};
 	t[#t+1] = LoadFont("_karnivore lite white 20px")..{ InitCommand=cmd(settext,".";y,init_pos+delta*8;x,WideScale(101, 150);zoom,.84;diffusealpha,0;sleep,2.64;diffusealpha,1); };
 	--p. grade
-	t[#t+1] = LoadFont("_karnivore lite white 20px")..{ InitCommand=cmd(settext,pgrade;y,init_pos+delta*6;x,WideScale(171, 220);zoom,.84;diffusealpha,0;sleep,4.2;diffusealpha,1); };
+	t[#t+1] = LoadFont("hdkarnivore 24px")..{ InitCommand=cmd(settext,pgrade;y,init_pos+delta*6;x,WideScale(171, 220);zoom,.84;diffusealpha,0;sleep,4.2;diffusealpha,1); };
 	--plate
-	t[#t+1] = LoadFont("_karnivore lite white 20px")..{ InitCommand=cmd(settext,plate;y,init_pos-delta;x,WideScale(171, 220);zoom,.84;diffusealpha,0;sleep,4.2;diffusealpha,1); };
+	t[#t+1] = LoadFont("hdkarnivore 24px")..{ InitCommand=cmd(settext,plate;y,init_pos-delta;x,WideScale(171, 220);zoom,.84;diffusealpha,0;sleep,4.2;diffusealpha,1); };
 
 end;
 
@@ -124,22 +124,22 @@ if GAMESTATE:IsSideJoined(PLAYER_2) then
 	
 	local pgrade = "(F)";
 	pgrade = (
-		(pscore >= 995000 and "(SSS+)")	or 
-		(pscore >= 990000 and "(SSS)")	or 
-		(pscore >= 985000 and "(SS+)")	or
-		(pscore >= 980000 and "(SS)")	or
-		(pscore >= 975000 and "(S+)")	or
-		(pscore >= 970000 and "(S)")	or 
-		(pscore >= 960000 and "(AAA+)")	or 
-		(pscore >= 950000 and "(AAA)")	or
-		(pscore >= 925000 and "(AA+)")	or
-		(pscore >= 900000 and "(AA)")	or
-		(pscore >= 825000 and "(A+)")	or
-		(pscore >= 750000 and "(A)")	or
-		(pscore >= 650000 and "(B)")	or
-		(pscore >= 550000 and "(C)")	or
-		(pscore >= 450000 and "(D)") 	or
-		"(F)"
+		(pscore >= 995000 and "SSS+")	or 
+		(pscore >= 990000 and "SSS")	or 
+		(pscore >= 985000 and "SS+")	or
+		(pscore >= 980000 and "SS")	or
+		(pscore >= 975000 and "S+")	or
+		(pscore >= 970000 and "S")	or 
+		(pscore >= 960000 and "AAA+")	or 
+		(pscore >= 950000 and "AAA")	or
+		(pscore >= 925000 and "AA+")	or
+		(pscore >= 900000 and "AA")	or
+		(pscore >= 825000 and "A+")	or
+		(pscore >= 750000 and "A")	or
+		(pscore >= 650000 and "B")	or
+		(pscore >= 550000 and "C")	or
+		(pscore >= 450000 and "D") 	or
+		"F"
 	);
 	local plate = "";
 	plate = (
@@ -168,9 +168,9 @@ if GAMESTATE:IsSideJoined(PLAYER_2) then
 	t[#t+1] = DrawRollingNumberP1( SCREEN_RIGHT-WideScale(106, 155), init_pos+delta*8, math.floor( kcal ), 'HorizAlign_Right', 2.64 )..{InitCommand=cmd(zoom,.84);};
 	t[#t+1] = LoadFont("_karnivore lite white 20px")..{ InitCommand=cmd(settext,".";y,init_pos+delta*8;x,SCREEN_RIGHT-WideScale(101, 150);zoom,.84;diffusealpha,0;sleep,2.64;diffusealpha,1); };
 	--p. grade
-	t[#t+1] = LoadFont("_karnivore lite white 20px")..{ InitCommand=cmd(settext,pgrade;y,init_pos+delta*6;x,SCREEN_RIGHT-WideScale(171, 220);zoom,.84;diffusealpha,0;sleep,4.2;diffusealpha,1); };
+	t[#t+1] = LoadFont("hdkarnivore 24px")..{ InitCommand=cmd(settext,pgrade;y,init_pos+delta*6;x,SCREEN_RIGHT-WideScale(171, 220);zoom,.84;diffusealpha,0;sleep,4.2;diffusealpha,1); };
 	--plate
-	t[#t+1] = LoadFont("_karnivore lite white 20px")..{ InitCommand=cmd(settext,plate;y,init_pos-delta;x,SCREEN_RIGHT-WideScale(171, 220);zoom,.84;diffusealpha,0;sleep,4.2;diffusealpha,1); };
+	t[#t+1] = LoadFont("hdkarnivore 24px")..{ InitCommand=cmd(settext,plate;y,init_pos-delta;x,SCREEN_RIGHT-WideScale(171, 220);zoom,.84;diffusealpha,0;sleep,4.2;diffusealpha,1); };
 
 end;
 
