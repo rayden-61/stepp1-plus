@@ -320,6 +320,94 @@ function GetPHighScoresFrame( pn, appear_on_start )
 				GoBackSelectingSongMessageCommand=cmd(finishtweening;settext,"");
 				OffCommand=cmd(stoptweening;visible,false);
 			};
+
+			--Personal Best P.Grade
+			LoadFont("hdkarnivore 24px")..{
+				InitCommand=cmd(settext,"";horizalign,left;zoom,.34;x,19;y,-14);
+				RefreshTextCommand=function(self)
+					local cur_song = GAMESTATE:GetCurrentSong();
+					local cur_steps = GAMESTATE:GetCurrentSteps(pn);
+					local pscore = 0;
+					local PHighScore = 0;
+					if GAMESTATE:HasProfile(pn) then
+						local HSList = PROFILEMAN:GetProfile( pn ):GetHighScoreList(cur_song,cur_steps):GetHighScores();
+						if (#HSList ~= 0) then
+							local perfects = HSList[1]:GetTapNoteScore('TapNoteScore_W2') + HSList[1]:GetTapNoteScore('TapNoteScore_CheckpointHit');
+							local greats = HSList[1]:GetTapNoteScore('TapNoteScore_W3');
+							local goods = HSList[1]:GetTapNoteScore('TapNoteScore_W4');
+							local bads = HSList[1]:GetTapNoteScore('TapNoteScore_W5');
+							local misses = HSList[1]:GetTapNoteScore('TapNoteScore_Miss') + HSList[1]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
+							local maxcombo = HSList[1]:GetMaxCombo();
+							local notestotal = perfects + greats + goods + bads + misses;
+							if notestotal <= 1 then notestotal = 1 end;
+							local weightednotes = perfects + 0.6*greats + 0.2*goods + 0.1*bads;
+							local pscore = math.floor(((weightednotes * 0.995 + maxcombo * 0.005) / notestotal) * 1000000 );
+							if pscore < 0 then
+								pscore = 0;
+							elseif pscore > 1000000 then
+								pscore = 1000000;
+							end;
+							local PHighScore = 0;
+							for i = 1,#HSList do
+								perfects = HSList[i]:GetTapNoteScore('TapNoteScore_W2') + HSList[i]:GetTapNoteScore('TapNoteScore_CheckpointHit');
+								greats = HSList[i]:GetTapNoteScore('TapNoteScore_W3');
+								goods = HSList[i]:GetTapNoteScore('TapNoteScore_W4');
+								bads = HSList[i]:GetTapNoteScore('TapNoteScore_W5');
+								misses = HSList[i]:GetTapNoteScore('TapNoteScore_Miss') + HSList[i]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
+								maxcombo = HSList[i]:GetMaxCombo();
+								notestotal = perfects + greats + goods + bads + misses;
+								if notestotal <= 1 then notestotal = 1 end;
+								weightednotes = perfects + 0.6*greats + 0.2*goods + 0.1*bads;
+								local pscore = math.floor(((weightednotes * 0.995 + maxcombo * 0.005) / notestotal) * 1000000 );
+								if pscore < 0 then
+									pscore = 0;
+								elseif pscore > 1000000 then
+									pscore = 1000000;
+								end;
+								PHighScore = (pscore > PHighScore) and pscore or PHighScore;
+								pgrade = (
+									(PHighScore >= 995000 and "SSS+")	or 
+									(PHighScore >= 990000 and "SSS")	or 
+									(PHighScore >= 985000 and "SS+")	or
+									(PHighScore >= 980000 and "SS")		or
+									(PHighScore >= 975000 and "S+")		or
+									(PHighScore >= 970000 and "S")		or 
+									(PHighScore >= 960000 and "AAA+")	or 
+									(PHighScore >= 950000 and "AAA")	or
+									(PHighScore >= 925000 and "AA+")	or
+									(PHighScore >= 900000 and "AA")		or
+									(PHighScore >= 825000 and "A+")		or
+									(PHighScore >= 750000 and "A")		or
+									(PHighScore >= 650000 and "B")		or
+									(PHighScore >= 550000 and "C")		or
+									(PHighScore >= 450000 and "D") 		or
+									"F"
+								);
+							end;
+							self:settext( pgrade );
+							PHighScore = 0;
+							pscore = 0;
+							perfects = 0;
+							greats = 0;
+							goods = 0;
+							bads = 0;
+							misses = 0;
+							maxcombo = 0;
+							notestotal = 0;
+							weightednotes = 0;
+						else
+							self:settext("")
+						end;
+					end;
+				end;
+				ChangeStepsMessageCommand=function(self,params)
+					if params.Player ~= pn then return; end;
+					(cmd(stoptweening;playcommand,'RefreshText'))(self);
+				end;
+				StartSelectingStepsMessageCommand=cmd(stoptweening;settext,"";sleep,.2;queuecommand,'RefreshText');
+				GoBackSelectingSongMessageCommand=cmd(finishtweening;settext,"");
+				OffCommand=cmd(stoptweening;visible,false);
+			};
 			
 			--machine best name
 		LoadFont("","_myriad pro 20px") .. {
@@ -421,25 +509,6 @@ function GetPHighScoresFrame( pn, appear_on_start )
 						end;
 						PHighScore = (pscore > PHighScore) and pscore or PHighScore;
 					end;
-					local pgrade = "";
-					pgrade = (
-						(PHighScore >= 995000 and "SSS+")	or 
-						(PHighScore >= 990000 and "SSS")	or 
-						(PHighScore >= 985000 and "SS+")	or
-						(PHighScore >= 980000 and "SS")	or
-						(PHighScore >= 975000 and "S+")	or
-						(PHighScore >= 970000 and "S")	or 
-						(PHighScore >= 960000 and "AAA+")	or 
-						(PHighScore >= 950000 and "AAA")	or
-						(PHighScore >= 925000 and "AA+")	or
-						(PHighScore >= 900000 and "AA")	or
-						(PHighScore >= 825000 and "A+")	or
-						(PHighScore >= 750000 and "A")	or
-						(PHighScore >= 650000 and "B")	or
-						(PHighScore >= 550000 and "C")	or
-						(PHighScore >= 450000 and "D") 	or
-						"F"
-					);
 					self:settext( AddDots(PHighScore) );
 					PHighScore = 0;
 					pscore = 0;
@@ -463,6 +532,92 @@ function GetPHighScoresFrame( pn, appear_on_start )
 			GoBackSelectingSongMessageCommand=cmd(stoptweening;settext,"");
 			OffCommand=cmd(stoptweening;visible,false);
 		};
+
+		--machine best hs p.grade
+		LoadFont("hdkarnivore 24px")..{
+			InitCommand=cmd(settext,"";horizalign,left;zoom,.34;x,20;y,21);
+			RefreshTextCommand=function(self)
+				local cur_song = GAMESTATE:GetCurrentSong();
+				local cur_steps = GAMESTATE:GetCurrentSteps(pn);
+				local HSList = PROFILEMAN:GetMachineProfile():GetHighScoreList(cur_song,cur_steps):GetHighScores();
+				if (#HSList ~= 0) then
+					local perfects = HSList[1]:GetTapNoteScore('TapNoteScore_W2') + HSList[1]:GetTapNoteScore('TapNoteScore_CheckpointHit');
+					local greats = HSList[1]:GetTapNoteScore('TapNoteScore_W3');
+					local goods = HSList[1]:GetTapNoteScore('TapNoteScore_W4');
+					local bads = HSList[1]:GetTapNoteScore('TapNoteScore_W5');
+					local misses = HSList[1]:GetTapNoteScore('TapNoteScore_Miss') + HSList[1]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
+					local maxcombo = HSList[1]:GetMaxCombo();
+					local notestotal = perfects + greats + goods + bads + misses;
+					if notestotal <= 1 then notestotal = 1 end;
+					local weightednotes = perfects + 0.6*greats + 0.2*goods + 0.1*bads;
+					local pscore = math.floor(((weightednotes * 0.995 + maxcombo * 0.005) / notestotal) * 1000000 );
+					if pscore < 0 then
+						pscore = 0;
+					elseif pscore > 1000000 then
+						pscore = 1000000;
+					end;
+					local PHighScore = 0;
+					for i = 1,#HSList do
+						perfects = HSList[i]:GetTapNoteScore('TapNoteScore_W2') + HSList[i]:GetTapNoteScore('TapNoteScore_CheckpointHit');
+						greats = HSList[i]:GetTapNoteScore('TapNoteScore_W3');
+						goods = HSList[i]:GetTapNoteScore('TapNoteScore_W4');
+						bads = HSList[i]:GetTapNoteScore('TapNoteScore_W5');
+						misses = HSList[i]:GetTapNoteScore('TapNoteScore_Miss') + HSList[i]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
+						maxcombo = HSList[i]:GetMaxCombo();
+						notestotal = perfects + greats + goods + bads + misses;
+						if notestotal <= 1 then notestotal = 1 end;
+						weightednotes = perfects + 0.6*greats + 0.2*goods + 0.1*bads;
+						pscore = math.floor(((weightednotes * 0.995 + maxcombo * 0.005) / notestotal) * 1000000 );
+						if pscore < 0 then
+							pscore = 0;
+						elseif pscore > 1000000 then
+							pscore = 1000000;
+						end;
+						PHighScore = (pscore > PHighScore) and pscore or PHighScore;
+					end;
+					local pgrade = "";
+					pgrade = (
+						(PHighScore >= 995000 and "SSS+")	or 
+						(PHighScore >= 990000 and "SSS")	or 
+						(PHighScore >= 985000 and "SS+")	or
+						(PHighScore >= 980000 and "SS")	or
+						(PHighScore >= 975000 and "S+")	or
+						(PHighScore >= 970000 and "S")	or 
+						(PHighScore >= 960000 and "AAA+")	or 
+						(PHighScore >= 950000 and "AAA")	or
+						(PHighScore >= 925000 and "AA+")	or
+						(PHighScore >= 900000 and "AA")	or
+						(PHighScore >= 825000 and "A+")	or
+						(PHighScore >= 750000 and "A")	or
+						(PHighScore >= 650000 and "B")	or
+						(PHighScore >= 550000 and "C")	or
+						(PHighScore >= 450000 and "D") 	or
+						"F"
+					);
+					self:settext( pgrade );
+					PHighScore = 0;
+					pscore = 0;
+					perfects = 0;
+					greats = 0;
+					goods = 0;
+					bads = 0;
+					misses = 0;
+					maxcombo = 0;
+					notestotal = 0;
+					weightednotes = 0;
+				else
+					self:settext("")
+				end;
+			end;
+			ChangeStepsMessageCommand=function(self,params)
+				if params.Player ~= pn then return; end;
+				(cmd(stoptweening;playcommand,'RefreshText'))(self);
+			end;
+			StartSelectingStepsMessageCommand=cmd(stoptweening;settext,"";sleep,.2;queuecommand,'RefreshText');
+			GoBackSelectingSongMessageCommand=cmd(stoptweening;settext,"");
+			OffCommand=cmd(stoptweening;visible,false);
+		};
+
 		LoadActor( THEME:GetPathG("","ScreenSelectMusic/highscores_glow") )..{
 			InitCommand=cmd(basezoom,.66;diffuse,0,1,1,1;blend,'BlendMode_Add');
 			OnCommand=cmd(zoomx,0);
