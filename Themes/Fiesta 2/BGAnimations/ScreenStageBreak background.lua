@@ -5,4 +5,4 @@ local t = Def.ActorFrame {};
 --	OnCommand=cmd(play);
 --};
 
---return t;
+return t;

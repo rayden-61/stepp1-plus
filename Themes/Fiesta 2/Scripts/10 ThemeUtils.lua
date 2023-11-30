@@ -231,6 +231,11 @@ end;
 
 --P.Score Frame
 function GetPHighScoresFrame( pn, appear_on_start )
+	local PersonalBestIndex = 1; 
+	local PersonalBestPScore = 0;
+	local MachineBestIndex = 1;
+	local MachineBestPScore = 0;
+	local MachineBestName = "";
 	local t = Def.ActorFrame {
 		OnCommand=function(self)
 			if appear_on_start then self:playcommand("StartSelectingSteps"); end;
@@ -251,65 +256,52 @@ function GetPHighScoresFrame( pn, appear_on_start )
 				GoBackSelectingSongMessageCommand=cmd(stoptweening;zoomx,1;linear,.2;zoomx,0);
 				OffCommand=cmd(stoptweening;zoomx,1;linear,.2;zoomx,0);
 			};
+
 			--personal hs
 			LoadFont("_karnivore lite white")..{
 				InitCommand=cmd(settext,"";horizalign,left;zoom,.62;x,-40;y,-14);
 				RefreshTextCommand=function(self)
 					local cur_song = GAMESTATE:GetCurrentSong();
 					local cur_steps = GAMESTATE:GetCurrentSteps(pn);
-					local pscore = 0;
-					local PHighScore = 0;
 					if GAMESTATE:HasProfile(pn) then
-						local HSList = PROFILEMAN:GetProfile( pn ):GetHighScoreList(cur_song,cur_steps):GetHighScores();
-						if (#HSList ~= 0) then
-							local perfects = HSList[1]:GetTapNoteScore('TapNoteScore_W2') + HSList[1]:GetTapNoteScore('TapNoteScore_CheckpointHit');
-							local greats = HSList[1]:GetTapNoteScore('TapNoteScore_W3');
-							local goods = HSList[1]:GetTapNoteScore('TapNoteScore_W4');
-							local bads = HSList[1]:GetTapNoteScore('TapNoteScore_W5');
-							local misses = HSList[1]:GetTapNoteScore('TapNoteScore_Miss') + HSList[1]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
-							local maxcombo = HSList[1]:GetMaxCombo();
-							local notestotal = perfects + greats + goods + bads + misses;
-							if notestotal <= 1 then notestotal = 1 end;
-							local weightednotes = perfects + 0.6*greats + 0.2*goods + 0.1*bads;
-							local pscore = math.floor(((weightednotes * 0.995 + maxcombo * 0.005) / notestotal) * 1000000 );
-							if pscore < 0 then
-								pscore = 0;
-							elseif pscore > 1000000 then
-								pscore = 1000000;
-							end;
-							local PHighScore = 0;
-							for i = 1,#HSList do
-								perfects = HSList[i]:GetTapNoteScore('TapNoteScore_W2') + HSList[i]:GetTapNoteScore('TapNoteScore_CheckpointHit');
-								greats = HSList[i]:GetTapNoteScore('TapNoteScore_W3');
-								goods = HSList[i]:GetTapNoteScore('TapNoteScore_W4');
-								bads = HSList[i]:GetTapNoteScore('TapNoteScore_W5');
-								misses = HSList[i]:GetTapNoteScore('TapNoteScore_Miss') + HSList[i]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
-								maxcombo = HSList[i]:GetMaxCombo();
+						local HighScoreList = PROFILEMAN:GetProfile( pn ):GetHighScoreList(cur_song,cur_steps):GetHighScores();
+						if (#HighScoreList ~= 0) then
+							local perfects = 0;
+							local greats = 0;
+							local goods = 0;
+							local bads = 0;
+							local misses = 0;
+							local maxcombo = 0;
+							local notestotal = 0;
+							local weightednotes = 0;
+							local pscore = 0;
+							for i = 1,#HighScoreList do
+								perfects = HighScoreList[i]:GetTapNoteScore('TapNoteScore_W2') + HighScoreList[i]:GetTapNoteScore('TapNoteScore_CheckpointHit');
+								greats = HighScoreList[i]:GetTapNoteScore('TapNoteScore_W3');
+								goods = HighScoreList[i]:GetTapNoteScore('TapNoteScore_W4');
+								bads = HighScoreList[i]:GetTapNoteScore('TapNoteScore_W5');
+								misses = HighScoreList[i]:GetTapNoteScore('TapNoteScore_Miss') + HighScoreList[i]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
+								maxcombo = HighScoreList[i]:GetMaxCombo();
 								notestotal = perfects + greats + goods + bads + misses;
 								if notestotal <= 1 then notestotal = 1 end;
 								weightednotes = perfects + 0.6*greats + 0.2*goods + 0.1*bads;
-								local pscore = math.floor(((weightednotes * 0.995 + maxcombo * 0.005) / notestotal) * 1000000 );
+								pscore = math.floor(((weightednotes * 0.995 + maxcombo * 0.005) / notestotal) * 1000000 );
 								if pscore < 0 then
 									pscore = 0;
 								elseif pscore > 1000000 then
 									pscore = 1000000;
 								end;
-								PHighScore = (pscore > PHighScore) and pscore or PHighScore;
+								if pscore > PersonalBestPScore then
+									PersonalBestIndex = i;
+									PersonalBestPScore = pscore;
+								end;
 							end;
-							self:settext( AddDots(PHighScore) );
-							PHighScore = 0;
-							pscore = 0;
-							perfects = 0;
-							greats = 0;
-							goods = 0;
-							bads = 0;
-							misses = 0;
-							maxcombo = 0;
-							notestotal = 0;
-							weightednotes = 0;
+							self:settext( AddDots(PersonalBestPScore) );
 						else
-							self:settext("")
+							self:settext("");
 						end;
+					else
+						self:settext("");
 					end;
 				end;
 				ChangeStepsMessageCommand=function(self,params)
@@ -332,72 +324,30 @@ function GetPHighScoresFrame( pn, appear_on_start )
 					if GAMESTATE:HasProfile(pn) then
 						local HSList = PROFILEMAN:GetProfile( pn ):GetHighScoreList(cur_song,cur_steps):GetHighScores();
 						if (#HSList ~= 0) then
-							local perfects = HSList[1]:GetTapNoteScore('TapNoteScore_W2') + HSList[1]:GetTapNoteScore('TapNoteScore_CheckpointHit');
-							local greats = HSList[1]:GetTapNoteScore('TapNoteScore_W3');
-							local goods = HSList[1]:GetTapNoteScore('TapNoteScore_W4');
-							local bads = HSList[1]:GetTapNoteScore('TapNoteScore_W5');
-							local misses = HSList[1]:GetTapNoteScore('TapNoteScore_Miss') + HSList[1]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
-							local maxcombo = HSList[1]:GetMaxCombo();
-							local notestotal = perfects + greats + goods + bads + misses;
-							if notestotal <= 1 then notestotal = 1 end;
-							local weightednotes = perfects + 0.6*greats + 0.2*goods + 0.1*bads;
-							local pscore = math.floor(((weightednotes * 0.995 + maxcombo * 0.005) / notestotal) * 1000000 );
-							if pscore < 0 then
-								pscore = 0;
-							elseif pscore > 1000000 then
-								pscore = 1000000;
-							end;
-							local PHighScore = 0;
-							for i = 1,#HSList do
-								perfects = HSList[i]:GetTapNoteScore('TapNoteScore_W2') + HSList[i]:GetTapNoteScore('TapNoteScore_CheckpointHit');
-								greats = HSList[i]:GetTapNoteScore('TapNoteScore_W3');
-								goods = HSList[i]:GetTapNoteScore('TapNoteScore_W4');
-								bads = HSList[i]:GetTapNoteScore('TapNoteScore_W5');
-								misses = HSList[i]:GetTapNoteScore('TapNoteScore_Miss') + HSList[i]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
-								maxcombo = HSList[i]:GetMaxCombo();
-								notestotal = perfects + greats + goods + bads + misses;
-								if notestotal <= 1 then notestotal = 1 end;
-								weightednotes = perfects + 0.6*greats + 0.2*goods + 0.1*bads;
-								local pscore = math.floor(((weightednotes * 0.995 + maxcombo * 0.005) / notestotal) * 1000000 );
-								if pscore < 0 then
-									pscore = 0;
-								elseif pscore > 1000000 then
-									pscore = 1000000;
-								end;
-								PHighScore = (pscore > PHighScore) and pscore or PHighScore;
 								pgrade = (
-									(PHighScore >= 995000 and "SSS+")	or 
-									(PHighScore >= 990000 and "SSS")	or 
-									(PHighScore >= 985000 and "SS+")	or
-									(PHighScore >= 980000 and "SS")		or
-									(PHighScore >= 975000 and "S+")		or
-									(PHighScore >= 970000 and "S")		or 
-									(PHighScore >= 960000 and "AAA+")	or 
-									(PHighScore >= 950000 and "AAA")	or
-									(PHighScore >= 925000 and "AA+")	or
-									(PHighScore >= 900000 and "AA")		or
-									(PHighScore >= 825000 and "A+")		or
-									(PHighScore >= 750000 and "A")		or
-									(PHighScore >= 650000 and "B")		or
-									(PHighScore >= 550000 and "C")		or
-									(PHighScore >= 450000 and "D") 		or
+									(PersonalBestPScore >= 995000 and "SSS+")	or 
+									(PersonalBestPScore >= 990000 and "SSS")	or 
+									(PersonalBestPScore >= 985000 and "SS+")	or
+									(PersonalBestPScore >= 980000 and "SS")		or
+									(PersonalBestPScore >= 975000 and "S+")		or
+									(PersonalBestPScore >= 970000 and "S")		or 
+									(PersonalBestPScore >= 960000 and "AAA+")	or 
+									(PersonalBestPScore >= 950000 and "AAA")	or
+									(PersonalBestPScore >= 925000 and "AA+")	or
+									(PersonalBestPScore >= 900000 and "AA")		or
+									(PersonalBestPScore >= 825000 and "A+")		or
+									(PersonalBestPScore >= 750000 and "A")		or
+									(PersonalBestPScore >= 650000 and "B")		or
+									(PersonalBestPScore >= 550000 and "C")		or
+									(PersonalBestPScore >= 450000 and "D") 		or
 									"F"
 								);
-							end;
-							self:settext( pgrade );
-							PHighScore = 0;
-							pscore = 0;
-							perfects = 0;
-							greats = 0;
-							goods = 0;
-							bads = 0;
-							misses = 0;
-							maxcombo = 0;
-							notestotal = 0;
-							weightednotes = 0;
+								self:settext( pgrade );
 						else
-							self:settext("")
+							self:settext("");
 						end;
+					else
+						self:settext("");
 					end;
 				end;
 				ChangeStepsMessageCommand=function(self,params)
@@ -417,19 +367,16 @@ function GetPHighScoresFrame( pn, appear_on_start )
 				local cur_steps = GAMESTATE:GetCurrentSteps( pn );
 				local HSList = PROFILEMAN:GetMachineProfile():GetHighScoreList(cur_song,cur_steps):GetHighScores();
 				local pscore = 0;
-				local PHighScore = 0;
 				if (#HSList ~= 0) then
-					local perfects = HSList[1]:GetTapNoteScore('TapNoteScore_W2') + HSList[1]:GetTapNoteScore('TapNoteScore_CheckpointHit');
-					local greats = HSList[1]:GetTapNoteScore('TapNoteScore_W3');
-					local goods = HSList[1]:GetTapNoteScore('TapNoteScore_W4');
-					local bads = HSList[1]:GetTapNoteScore('TapNoteScore_W5');
-					local misses = HSList[1]:GetTapNoteScore('TapNoteScore_Miss') + HSList[1]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
-					local maxcombo = HSList[1]:GetMaxCombo();
-					local notestotal = perfects + greats + goods + bads + misses;
-					if notestotal <= 1 then notestotal = 1 end;
-					local weightednotes = perfects + 0.6*greats + 0.2*goods + 0.1*bads;
-					local pscore = math.floor(((weightednotes * 0.995 + maxcombo * 0.005) / notestotal) * 1000000 );
-					local PHighScore = 0;
+					local perfects = 0;
+					local greats = 0;
+					local goods = 0;
+					local bads = 0;
+					local misses = 0;		
+					local maxcombo = 0;
+					local notestotal = 0;
+					local weightednotes = 0;
+					local pscore = 0;
 					for i = 1,#HSList do
 						perfects = HSList[i]:GetTapNoteScore('TapNoteScore_W2') + HSList[i]:GetTapNoteScore('TapNoteScore_CheckpointHit');
 						greats = HSList[i]:GetTapNoteScore('TapNoteScore_W3');
@@ -441,20 +388,13 @@ function GetPHighScoresFrame( pn, appear_on_start )
 						if notestotal <= 1 then notestotal = 1 end;
 						weightednotes = perfects + 0.6*greats + 0.2*goods + 0.1*bads;
 						pscore = math.floor(((weightednotes * 0.995 + maxcombo * 0.005) / notestotal) * 1000000 );
-						PHighScoreName = (pscore > PHighScore) and string.upper( HSList[i]:GetName() ) or PHighScoreName;
-						PHighScore = (pscore > PHighScore) and pscore or PHighScore;
+						if pscore > MachineBestPScore then
+							MachineBestIndex = i;
+							MachineBestPScore = pscore;
+							MachineBestName = HSList[i]:GetName();
+						end;
 					end;
-					self:settext( PHighScoreName );
-					PHighScore = 0;
-					pscore = 0;
-					perfects = 0;
-					greats = 0;
-					goods = 0;
-					bads = 0;
-					misses = 0;
-					maxcombo = 0;
-					notestotal = 0;
-					weightednotes = 0;
+					self:settext( string.upper(MachineBestName) );
 				else
 					self:settext("")
 				end;
@@ -475,51 +415,7 @@ function GetPHighScoresFrame( pn, appear_on_start )
 				local cur_steps = GAMESTATE:GetCurrentSteps(pn);
 				local HSList = PROFILEMAN:GetMachineProfile():GetHighScoreList(cur_song,cur_steps):GetHighScores();
 				if (#HSList ~= 0) then
-					local perfects = HSList[1]:GetTapNoteScore('TapNoteScore_W2') + HSList[1]:GetTapNoteScore('TapNoteScore_CheckpointHit');
-					local greats = HSList[1]:GetTapNoteScore('TapNoteScore_W3');
-					local goods = HSList[1]:GetTapNoteScore('TapNoteScore_W4');
-					local bads = HSList[1]:GetTapNoteScore('TapNoteScore_W5');
-					local misses = HSList[1]:GetTapNoteScore('TapNoteScore_Miss') + HSList[1]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
-					local maxcombo = HSList[1]:GetMaxCombo();
-					local notestotal = perfects + greats + goods + bads + misses;
-					if notestotal <= 1 then notestotal = 1 end;
-					local weightednotes = perfects + 0.6*greats + 0.2*goods + 0.1*bads;
-					local pscore = math.floor(((weightednotes * 0.995 + maxcombo * 0.005) / notestotal) * 1000000 );
-					if pscore < 0 then
-						pscore = 0;
-					elseif pscore > 1000000 then
-						pscore = 1000000;
-					end;
-					local PHighScore = 0;
-					for i = 1,#HSList do
-						perfects = HSList[i]:GetTapNoteScore('TapNoteScore_W2') + HSList[i]:GetTapNoteScore('TapNoteScore_CheckpointHit');
-						greats = HSList[i]:GetTapNoteScore('TapNoteScore_W3');
-						goods = HSList[i]:GetTapNoteScore('TapNoteScore_W4');
-						bads = HSList[i]:GetTapNoteScore('TapNoteScore_W5');
-						misses = HSList[i]:GetTapNoteScore('TapNoteScore_Miss') + HSList[i]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
-						maxcombo = HSList[i]:GetMaxCombo();
-						notestotal = perfects + greats + goods + bads + misses;
-						if notestotal <= 1 then notestotal = 1 end;
-						weightednotes = perfects + 0.6*greats + 0.2*goods + 0.1*bads;
-						pscore = math.floor(((weightednotes * 0.995 + maxcombo * 0.005) / notestotal) * 1000000 );
-						if pscore < 0 then
-							pscore = 0;
-						elseif pscore > 1000000 then
-							pscore = 1000000;
-						end;
-						PHighScore = (pscore > PHighScore) and pscore or PHighScore;
-					end;
-					self:settext( AddDots(PHighScore) );
-					PHighScore = 0;
-					pscore = 0;
-					perfects = 0;
-					greats = 0;
-					goods = 0;
-					bads = 0;
-					misses = 0;
-					maxcombo = 0;
-					notestotal = 0;
-					weightednotes = 0;
+					self:settext( AddDots(MachineBestPScore) );
 				else
 					self:settext("")
 				end;
@@ -535,76 +431,32 @@ function GetPHighScoresFrame( pn, appear_on_start )
 
 		--machine best hs p.grade
 		LoadFont("hdkarnivore 24px")..{
-			InitCommand=cmd(settext,"";horizalign,left;zoom,.34;x,20;y,21);
+			InitCommand=cmd(settext,"";horizalign,left;zoom,.34;x,19;y,21);
 			RefreshTextCommand=function(self)
 				local cur_song = GAMESTATE:GetCurrentSong();
 				local cur_steps = GAMESTATE:GetCurrentSteps(pn);
 				local HSList = PROFILEMAN:GetMachineProfile():GetHighScoreList(cur_song,cur_steps):GetHighScores();
 				if (#HSList ~= 0) then
-					local perfects = HSList[1]:GetTapNoteScore('TapNoteScore_W2') + HSList[1]:GetTapNoteScore('TapNoteScore_CheckpointHit');
-					local greats = HSList[1]:GetTapNoteScore('TapNoteScore_W3');
-					local goods = HSList[1]:GetTapNoteScore('TapNoteScore_W4');
-					local bads = HSList[1]:GetTapNoteScore('TapNoteScore_W5');
-					local misses = HSList[1]:GetTapNoteScore('TapNoteScore_Miss') + HSList[1]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
-					local maxcombo = HSList[1]:GetMaxCombo();
-					local notestotal = perfects + greats + goods + bads + misses;
-					if notestotal <= 1 then notestotal = 1 end;
-					local weightednotes = perfects + 0.6*greats + 0.2*goods + 0.1*bads;
-					local pscore = math.floor(((weightednotes * 0.995 + maxcombo * 0.005) / notestotal) * 1000000 );
-					if pscore < 0 then
-						pscore = 0;
-					elseif pscore > 1000000 then
-						pscore = 1000000;
-					end;
-					local PHighScore = 0;
-					for i = 1,#HSList do
-						perfects = HSList[i]:GetTapNoteScore('TapNoteScore_W2') + HSList[i]:GetTapNoteScore('TapNoteScore_CheckpointHit');
-						greats = HSList[i]:GetTapNoteScore('TapNoteScore_W3');
-						goods = HSList[i]:GetTapNoteScore('TapNoteScore_W4');
-						bads = HSList[i]:GetTapNoteScore('TapNoteScore_W5');
-						misses = HSList[i]:GetTapNoteScore('TapNoteScore_Miss') + HSList[i]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
-						maxcombo = HSList[i]:GetMaxCombo();
-						notestotal = perfects + greats + goods + bads + misses;
-						if notestotal <= 1 then notestotal = 1 end;
-						weightednotes = perfects + 0.6*greats + 0.2*goods + 0.1*bads;
-						pscore = math.floor(((weightednotes * 0.995 + maxcombo * 0.005) / notestotal) * 1000000 );
-						if pscore < 0 then
-							pscore = 0;
-						elseif pscore > 1000000 then
-							pscore = 1000000;
-						end;
-						PHighScore = (pscore > PHighScore) and pscore or PHighScore;
-					end;
 					local pgrade = "";
 					pgrade = (
-						(PHighScore >= 995000 and "SSS+")	or 
-						(PHighScore >= 990000 and "SSS")	or 
-						(PHighScore >= 985000 and "SS+")	or
-						(PHighScore >= 980000 and "SS")	or
-						(PHighScore >= 975000 and "S+")	or
-						(PHighScore >= 970000 and "S")	or 
-						(PHighScore >= 960000 and "AAA+")	or 
-						(PHighScore >= 950000 and "AAA")	or
-						(PHighScore >= 925000 and "AA+")	or
-						(PHighScore >= 900000 and "AA")	or
-						(PHighScore >= 825000 and "A+")	or
-						(PHighScore >= 750000 and "A")	or
-						(PHighScore >= 650000 and "B")	or
-						(PHighScore >= 550000 and "C")	or
-						(PHighScore >= 450000 and "D") 	or
+						(MachineBestPScore >= 995000 and "SSS+")	or 
+						(MachineBestPScore >= 990000 and "SSS")	or 
+						(MachineBestPScore >= 985000 and "SS+")	or
+						(MachineBestPScore >= 980000 and "SS")	or
+						(MachineBestPScore >= 975000 and "S+")	or
+						(MachineBestPScore >= 970000 and "S")	or 
+						(MachineBestPScore >= 960000 and "AAA+")	or 
+						(MachineBestPScore >= 950000 and "AAA")	or
+						(MachineBestPScore >= 925000 and "AA+")	or
+						(MachineBestPScore >= 900000 and "AA")	or
+						(MachineBestPScore >= 825000 and "A+")	or
+						(MachineBestPScore >= 750000 and "A")	or
+						(MachineBestPScore >= 650000 and "B")	or
+						(MachineBestPScore >= 550000 and "C")	or
+						(MachineBestPScore >= 450000 and "D") 	or
 						"F"
 					);
 					self:settext( pgrade );
-					PHighScore = 0;
-					pscore = 0;
-					perfects = 0;
-					greats = 0;
-					goods = 0;
-					bads = 0;
-					misses = 0;
-					maxcombo = 0;
-					notestotal = 0;
-					weightednotes = 0;
 				else
 					self:settext("")
 				end;
