@@ -71,7 +71,7 @@ end;
 -----------------------------------------------------------------------
 --///////////////////////////////////////////////////////////////
 -- Usado en las esferas de nivel del SSM y Evaluation
--- Actor:Setea el nivel, traduciendo los números 99 y -1
+-- Actor:Setea el nivel, traduciendo los nÃºmeros 99 y -1
 function Actor:SetLevelText(pn)
 	local cur_steps = GAMESTATE:GetCurrentSteps(pn);
 	if cur_steps == nil then return; end;
@@ -263,6 +263,8 @@ function GetPHighScoresFrame( pn, appear_on_start )
 				RefreshTextCommand=function(self)
 					local cur_song = GAMESTATE:GetCurrentSong();
 					local cur_steps = GAMESTATE:GetCurrentSteps(pn);
+					PersonalBestIndex = 1;
+					PersonalBestPScore = 0;
 					if GAMESTATE:HasProfile(pn) then
 						local HighScoreList = PROFILEMAN:GetProfile( pn ):GetHighScoreList(cur_song,cur_steps):GetHighScores();
 						if (#HighScoreList ~= 0) then
@@ -291,7 +293,7 @@ function GetPHighScoresFrame( pn, appear_on_start )
 								elseif pscore > 1000000 then
 									pscore = 1000000;
 								end;
-								if pscore > PersonalBestPScore then
+								if pscore >= PersonalBestPScore then
 									PersonalBestIndex = i;
 									PersonalBestPScore = pscore;
 								end;
@@ -319,8 +321,6 @@ function GetPHighScoresFrame( pn, appear_on_start )
 				RefreshTextCommand=function(self)
 					local cur_song = GAMESTATE:GetCurrentSong();
 					local cur_steps = GAMESTATE:GetCurrentSteps(pn);
-					local pscore = 0;
-					local PHighScore = 0;
 					if GAMESTATE:HasProfile(pn) then
 						local HSList = PROFILEMAN:GetProfile( pn ):GetHighScoreList(cur_song,cur_steps):GetHighScores();
 						if (#HSList ~= 0) then
@@ -352,7 +352,7 @@ function GetPHighScoresFrame( pn, appear_on_start )
 				end;
 				ChangeStepsMessageCommand=function(self,params)
 					if params.Player ~= pn then return; end;
-					(cmd(stoptweening;playcommand,'RefreshText'))(self);
+					(cmd(stoptweening;sleep,.01;queuecommand,'RefreshText'))(self);
 				end;
 				StartSelectingStepsMessageCommand=cmd(stoptweening;settext,"";sleep,.2;queuecommand,'RefreshText');
 				GoBackSelectingSongMessageCommand=cmd(finishtweening;settext,"");
@@ -360,117 +360,121 @@ function GetPHighScoresFrame( pn, appear_on_start )
 			};
 			
 			--machine best name
-		LoadFont("","_myriad pro 20px") .. {
-			InitCommand=cmd(settext,"";horizalign,left;zoom,.62;x,-40;y,12);
-			RefreshTextCommand=function(self)
-				local cur_song = GAMESTATE:GetCurrentSong();
-				local cur_steps = GAMESTATE:GetCurrentSteps( pn );
-				local HSList = PROFILEMAN:GetMachineProfile():GetHighScoreList(cur_song,cur_steps):GetHighScores();
-				local pscore = 0;
-				if (#HSList ~= 0) then
-					local perfects = 0;
-					local greats = 0;
-					local goods = 0;
-					local bads = 0;
-					local misses = 0;		
-					local maxcombo = 0;
-					local notestotal = 0;
-					local weightednotes = 0;
+			LoadFont("","_myriad pro 20px") .. {
+				InitCommand=cmd(settext,"";horizalign,left;zoom,.62;x,-40;y,12);
+				RefreshTextCommand=function(self)
+					local cur_song = GAMESTATE:GetCurrentSong();
+					local cur_steps = GAMESTATE:GetCurrentSteps( pn );
+					local HSList = PROFILEMAN:GetMachineProfile():GetHighScoreList(cur_song,cur_steps):GetHighScores();
 					local pscore = 0;
-					for i = 1,#HSList do
-						perfects = HSList[i]:GetTapNoteScore('TapNoteScore_W2') + HSList[i]:GetTapNoteScore('TapNoteScore_CheckpointHit');
-						greats = HSList[i]:GetTapNoteScore('TapNoteScore_W3');
-						goods = HSList[i]:GetTapNoteScore('TapNoteScore_W4');
-						bads = HSList[i]:GetTapNoteScore('TapNoteScore_W5');
-						misses = HSList[i]:GetTapNoteScore('TapNoteScore_Miss') + HSList[i]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
-						maxcombo = HSList[i]:GetMaxCombo();
-						notestotal = perfects + greats + goods + bads + misses;
-						if notestotal <= 1 then notestotal = 1 end;
-						weightednotes = perfects + 0.6*greats + 0.2*goods + 0.1*bads;
-						pscore = math.floor(((weightednotes * 0.995 + maxcombo * 0.005) / notestotal) * 1000000 );
-						if pscore > MachineBestPScore then
-							MachineBestIndex = i;
-							MachineBestPScore = pscore;
-							MachineBestName = HSList[i]:GetName();
+					MachineBestIndex = 1;
+					MachineBestPScore = 0;
+					MachineBestName = "";
+					if (#HSList ~= 0) then
+						local perfects = 0;
+						local greats = 0;
+						local goods = 0;
+						local bads = 0;
+						local misses = 0;		
+						local maxcombo = 0;
+						local notestotal = 0;
+						local weightednotes = 0;
+						local pscore = 0;
+						for i = 1,#HSList do
+							perfects = HSList[i]:GetTapNoteScore('TapNoteScore_W2') + HSList[i]:GetTapNoteScore('TapNoteScore_CheckpointHit');
+							greats = HSList[i]:GetTapNoteScore('TapNoteScore_W3');
+							goods = HSList[i]:GetTapNoteScore('TapNoteScore_W4');
+							bads = HSList[i]:GetTapNoteScore('TapNoteScore_W5');
+							misses = HSList[i]:GetTapNoteScore('TapNoteScore_Miss') + HSList[i]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
+							maxcombo = HSList[i]:GetMaxCombo();
+							notestotal = perfects + greats + goods + bads + misses;
+							if notestotal <= 1 then notestotal = 1 end;
+							weightednotes = perfects + 0.6*greats + 0.2*goods + 0.1*bads;
+							pscore = math.floor(((weightednotes * 0.995 + maxcombo * 0.005) / notestotal) * 1000000 );
+							if pscore >= MachineBestPScore then
+								MachineBestIndex = i;
+								MachineBestPScore = pscore;
+								MachineBestName = HSList[i]:GetName();
+							end;
 						end;
+						self:settext( string.upper(MachineBestName) );
+					else
+						self:settext("")
 					end;
-					self:settext( string.upper(MachineBestName) );
-				else
-					self:settext("")
 				end;
-			end;
-			ChangeStepsMessageCommand=function(self,params)
-				if params.Player ~= pn then return; end;
-				(cmd(stoptweening;playcommand,'RefreshText'))(self);
-			end;
-			StartSelectingStepsMessageCommand=cmd(stoptweening;settext,"";sleep,.2;queuecommand,'RefreshText');
-			GoBackSelectingSongMessageCommand=cmd(stoptweening;settext,"");
-			OffCommand=cmd(stoptweening;visible,false);
-		};
-		--machine best hs
-		LoadFont("_karnivore lite white")..{
-			InitCommand=cmd(settext,"";horizalign,left;zoom,.62;x,-40;y,21);
-			RefreshTextCommand=function(self)
-				local cur_song = GAMESTATE:GetCurrentSong();
-				local cur_steps = GAMESTATE:GetCurrentSteps(pn);
-				local HSList = PROFILEMAN:GetMachineProfile():GetHighScoreList(cur_song,cur_steps):GetHighScores();
-				if (#HSList ~= 0) then
-					self:settext( AddDots(MachineBestPScore) );
-				else
-					self:settext("")
+				ChangeStepsMessageCommand=function(self,params)
+					if params.Player ~= pn then return; end;
+					(cmd(stoptweening;playcommand,'RefreshText'))(self);
 				end;
-			end;
-			ChangeStepsMessageCommand=function(self,params)
-				if params.Player ~= pn then return; end;
-				(cmd(stoptweening;playcommand,'RefreshText'))(self);
-			end;
-			StartSelectingStepsMessageCommand=cmd(stoptweening;settext,"";sleep,.2;queuecommand,'RefreshText');
-			GoBackSelectingSongMessageCommand=cmd(stoptweening;settext,"");
-			OffCommand=cmd(stoptweening;visible,false);
-		};
+				StartSelectingStepsMessageCommand=cmd(stoptweening;settext,"";sleep,.20;queuecommand,'RefreshText');
+				GoBackSelectingSongMessageCommand=cmd(stoptweening;settext,"");
+				OffCommand=cmd(stoptweening;visible,false);
+			};
 
-		--machine best hs p.grade
-		LoadFont("hdkarnivore 24px")..{
-			InitCommand=cmd(settext,"";horizalign,left;zoom,.34;x,19;y,21);
-			RefreshTextCommand=function(self)
-				local cur_song = GAMESTATE:GetCurrentSong();
-				local cur_steps = GAMESTATE:GetCurrentSteps(pn);
-				local HSList = PROFILEMAN:GetMachineProfile():GetHighScoreList(cur_song,cur_steps):GetHighScores();
-				if (#HSList ~= 0) then
-					local pgrade = "";
-					pgrade = (
-						(MachineBestPScore >= 995000 and "SSS+")	or 
-						(MachineBestPScore >= 990000 and "SSS")	or 
-						(MachineBestPScore >= 985000 and "SS+")	or
-						(MachineBestPScore >= 980000 and "SS")	or
-						(MachineBestPScore >= 975000 and "S+")	or
-						(MachineBestPScore >= 970000 and "S")	or 
-						(MachineBestPScore >= 960000 and "AAA+")	or 
-						(MachineBestPScore >= 950000 and "AAA")	or
-						(MachineBestPScore >= 925000 and "AA+")	or
-						(MachineBestPScore >= 900000 and "AA")	or
-						(MachineBestPScore >= 825000 and "A+")	or
-						(MachineBestPScore >= 750000 and "A")	or
-						(MachineBestPScore >= 650000 and "B")	or
-						(MachineBestPScore >= 550000 and "C")	or
-						(MachineBestPScore >= 450000 and "D") 	or
-						"F"
-					);
-					self:settext( pgrade );
-				else
-					self:settext("")
+			--machine best hs
+			LoadFont("_karnivore lite white")..{
+				InitCommand=cmd(settext,"";horizalign,left;zoom,.62;x,-40;y,21);
+				RefreshTextCommand=function(self)
+					local cur_song = GAMESTATE:GetCurrentSong();
+					local cur_steps = GAMESTATE:GetCurrentSteps(pn);
+					local HSList = PROFILEMAN:GetMachineProfile():GetHighScoreList(cur_song,cur_steps):GetHighScores();
+					if (#HSList ~= 0) then
+						self:settext( AddDots(MachineBestPScore) );
+					else
+						self:settext("")
+					end;
 				end;
-			end;
-			ChangeStepsMessageCommand=function(self,params)
-				if params.Player ~= pn then return; end;
-				(cmd(stoptweening;playcommand,'RefreshText'))(self);
-			end;
-			StartSelectingStepsMessageCommand=cmd(stoptweening;settext,"";sleep,.2;queuecommand,'RefreshText');
-			GoBackSelectingSongMessageCommand=cmd(stoptweening;settext,"");
-			OffCommand=cmd(stoptweening;visible,false);
-		};
+				ChangeStepsMessageCommand=function(self,params)
+					if params.Player ~= pn then return; end;
+					(cmd(stoptweening;sleep,.01;queuecommand,'RefreshText'))(self);
+				end;
+				StartSelectingStepsMessageCommand=cmd(stoptweening;settext,"";sleep,.21;queuecommand,'RefreshText');
+				GoBackSelectingSongMessageCommand=cmd(stoptweening;settext,"");
+				OffCommand=cmd(stoptweening;visible,false);
+			};
 
-		LoadActor( THEME:GetPathG("","ScreenSelectMusic/highscores_glow") )..{
+			--machine best hs p.grade
+			LoadFont("hdkarnivore 24px")..{
+				InitCommand=cmd(settext,"";horizalign,left;zoom,.34;x,19;y,21);
+				RefreshTextCommand=function(self)
+					local cur_song = GAMESTATE:GetCurrentSong();
+					local cur_steps = GAMESTATE:GetCurrentSteps(pn);
+					local HSList = PROFILEMAN:GetMachineProfile():GetHighScoreList(cur_song,cur_steps):GetHighScores();
+					if (#HSList ~= 0) then
+						local pgrade = "";
+						pgrade = (
+							(MachineBestPScore >= 995000 and "SSS+")	or 
+							(MachineBestPScore >= 990000 and "SSS")		or 
+							(MachineBestPScore >= 985000 and "SS+")		or
+							(MachineBestPScore >= 980000 and "SS")		or
+							(MachineBestPScore >= 975000 and "S+")		or
+							(MachineBestPScore >= 970000 and "S")		or 
+							(MachineBestPScore >= 960000 and "AAA+")	or 
+							(MachineBestPScore >= 950000 and "AAA")		or
+							(MachineBestPScore >= 925000 and "AA+")		or
+							(MachineBestPScore >= 900000 and "AA")		or
+							(MachineBestPScore >= 825000 and "A+")		or
+							(MachineBestPScore >= 750000 and "A")		or
+							(MachineBestPScore >= 650000 and "B")		or
+							(MachineBestPScore >= 550000 and "C")		or
+							(MachineBestPScore >= 450000 and "D") 		or
+							"F"
+						);
+						self:settext( pgrade );
+					else
+						self:settext("")
+					end;
+				end;
+				ChangeStepsMessageCommand=function(self,params)
+					if params.Player ~= pn then return; end;
+					(cmd(stoptweening;sleep,.01;queuecommand,'RefreshText'))(self);
+				end;
+				StartSelectingStepsMessageCommand=cmd(stoptweening;settext,"";sleep,.21;queuecommand,'RefreshText');
+				GoBackSelectingSongMessageCommand=cmd(stoptweening;settext,"");
+				OffCommand=cmd(stoptweening;visible,false);
+			};
+
+			LoadActor( THEME:GetPathG("","ScreenSelectMusic/highscores_glow") )..{
 			InitCommand=cmd(basezoom,.66;diffuse,0,1,1,1;blend,'BlendMode_Add');
 			OnCommand=cmd(zoomx,0);
 			StartSelectingStepsMessageCommand=cmd(stoptweening;horizalign,center;diffusealpha,0;zoomx,0;x,0;sleep,.2;linear,.1;zoomx,1;diffusealpha,.8;linear,.1;zoomx,0;diffusealpha,0;queuecommand,'Loop');
@@ -487,7 +491,7 @@ function GetPHighScoresFrame( pn, appear_on_start )
 			end;
 			GoBackSelectingSongMessageCommand=cmd(stoptweening;zoomx,0;x,0);
 			OffCommand=cmd(stoptweening;zoomx,0;x,0);
-		};
+			};
 		};
 	};
 	return t;
@@ -521,7 +525,7 @@ end;
 
 --/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 --/////////////////////////////////////////////////////////////////////////////////////////////////////////////
--- Obtiene el color de la esfera, según el estilo y descripción del chart
+-- Obtiene el color de la esfera, segï¿½n el estilo y descripciï¿½n del chart
 function GetDiffNumberBall( cur_steps )
 	if cur_steps == nil then return 0; end;
 	style = cur_steps:GetStepsType();
@@ -588,7 +592,7 @@ local function GetBallUnderLabel( cur_steps )
 	return 2; --empty
 end;
 
--- Función para obtener la esfera de nivel
+-- Funciï¿½n para obtener la esfera de nivel
 function GetBallLevel( pn, show_dir_arrows )
 	local k = Def.ActorFrame {		
 		InitCommand=cmd(basezoom,.67);

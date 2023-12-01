@@ -24,6 +24,29 @@ local function GetStageNumberActor()
 	};
 end;
 
+--thanks to StepMod / arka for this, extracted from StepMod 1.2
+function songBarBlue()
+	local MeterWidth = 235;
+	local style = GAMESTATE:GetCurrentStyle():GetStyleType();
+	if( (style=='StyleType_OnePlayerTwoSides') or (style=='StyleType_TwoPlayersSharedSides') ) then MeterWidth = 470 end;
+	return 	Def.SongMeterDisplay {
+		StreamWidth=MeterWidth;
+		Stream=Def.Quad { InitCommand=cmd(diffusealpha,0); };
+		Tip=LoadActor( THEME:GetPathG("","ScreenSelectMusic/_cursor_ball") );
+	};
+end;
+
+function songBarRed()
+	local MeterWidth = 235;
+	local style = GAMESTATE:GetCurrentStyle():GetStyleType();
+	if( (style=='StyleType_OnePlayerTwoSides') or (style=='StyleType_TwoPlayersSharedSides') ) then MeterWidth = 470 end;
+	return 	Def.SongMeterDisplay {
+		StreamWidth=MeterWidth;
+		Stream=Def.Quad { InitCommand=cmd(diffusealpha,0); };
+		Tip=LoadActor( THEME:GetPathG("","ScreenSelectMusic/_current_time_red") );
+	};
+end;
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 local t = Def.ActorFrame {};
@@ -112,5 +135,145 @@ t[#t+1] = GetPlayerJudgment(PLAYER_2)..{
 }
 end;
 
+
+--P1 Time Meter Start--
+if GAMESTATE:IsSideJoined(PLAYER_1) then
+	local P1PosX = GetPlayerPosition(PLAYER_1)
+	if( (style=='StyleType_OnePlayerTwoSides') or (style=='StyleType_TwoPlayersSharedSides') ) then P1PosX = P1PosX - 235 end;
+	local GlassSoundNotPlayed = true;
+	local MeterWidth = 235;
+	if( (style=='StyleType_OnePlayerTwoSides') or (style=='StyleType_TwoPlayersSharedSides') ) then MeterWidth = 470 end;
+
+	--P1 Red Timeline--
+	t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/_time_line_red") ).. {
+		InitCommand=cmd(SetWidth,MeterWidth;x,P1PosX;y,SCREEN_CENTER_Y-205);
+	};
+
+	--P1 Blue Timeline--
+	t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/_cursor_line") ).. {
+		InitCommand=cmd(SetWidth,MeterWidth;x,P1PosX;y,SCREEN_CENTER_Y-205);
+
+		JudgmentMessageCommand=function(self,param)
+			if GAMESTATE:IsSideJoined(PLAYER_1) then
+				STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_1):GetCurrentLife();
+				local deathP1=STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_1):GetReachedLifeZero();
+				if deathP1 then		
+					self:visible(false);
+				else
+					self:visible(true);
+				end;
+			end;		
+		end;	
+	};
+
+	--P1 Red Cursor--
+	t[#t+1] = songBarRed()..{
+		InitCommand=cmd(x,P1PosX;y,SCREEN_CENTER_Y-205);
+	};
+
+	--P1 Blue Cursor--
+	t[#t+1] = songBarBlue()..{
+		InitCommand=cmd(x,P2PosX;y,SCREEN_CENTER_Y-205);
+		JudgmentMessageCommand=function(self,param)
+			if GAMESTATE:IsSideJoined(PLAYER_1) then
+				STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_1):GetCurrentLife();
+				local deathP1=STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_1):GetReachedLifeZero();
+				if deathP1 then		
+					self:visible(false);
+				else
+					self:visible(true);
+				end;
+			end;		
+		end;
+	};
+
+	--P1 Glass Shatter Sound--
+	t[#t+1] = LoadActor(THEME:GetPathS("","Rank/GLASS.mp3"))..{
+		JudgmentMessageCommand=function(self,param)
+			STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_1):GetCurrentLife();
+			local deathP1=STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_1):GetReachedLifeZero();
+			if deathP1 then
+				if GlassSoundNotPlayed then
+					self:play();
+					GlassSoundNotPlayed = false;
+				end
+			end;	
+		end;
+	};
+
+end;
+
+
+--P2 Time Meter Start--
+if GAMESTATE:IsSideJoined(PLAYER_2) then
+	local P2PosX = GetPlayerPosition(PLAYER_2);
+	local GlassSoundNotPlayed = true;
+	local MeterWidth = 235;
+	if( (style=='StyleType_OnePlayerTwoSides') or (style=='StyleType_TwoPlayersSharedSides') ) then MeterWidth = 470 end;
+
+	--P2 Red Timeline--
+	t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/_time_line_red") ).. {
+		InitCommand=cmd(SetWidth,MeterWidth;x,P2PosX;y,SCREEN_CENTER_Y-205);
+	};
+
+	--P2 Blue Timeline--
+	t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/_cursor_line") ).. {
+		InitCommand=cmd(SetWidth,MeterWidth;x,P2PosX;y,SCREEN_CENTER_Y-205);
+
+		JudgmentMessageCommand=function(self,param)
+			if GAMESTATE:IsSideJoined(PLAYER_2) then
+				STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_2):GetCurrentLife();
+				local deathP2=STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_2):GetReachedLifeZero();
+				if deathP2 then		
+					self:visible(false);
+				else
+					self:visible(true);
+				end;
+			end;		
+		end;	
+	};
+
+	--P2 Red Cursor--
+	t[#t+1] = songBarRed()..{
+		InitCommand=cmd(x,(P2PosX);y,SCREEN_CENTER_Y-205);
+	};
+
+	--P2 Blue Cursor--
+	t[#t+1] = songBarBlue()..{
+		InitCommand=cmd(x,(P2PosX);y,SCREEN_CENTER_Y-205);
+		JudgmentMessageCommand=function(self,param)
+			if GAMESTATE:IsSideJoined(PLAYER_2) then
+				STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_2):GetCurrentLife();
+				local deathP2=STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_2):GetReachedLifeZero();
+				if deathP2 then		
+					self:visible(false);
+				else
+					self:visible(true);
+				end;
+			end;		
+		end;
+	};
+
+	--P2 Glass Shatter Sound--
+	t[#t+1] = LoadActor(THEME:GetPathS("","Rank/GLASS.mp3"))..{
+		JudgmentMessageCommand=function(self,param)
+			STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_2):GetCurrentLife();
+			local deathP2=STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_2):GetReachedLifeZero();
+			if deathP2 then
+				if GlassSoundNotPlayed then
+					self:play();
+					GlassSoundNotPlayed = false;
+				end
+			end;	
+		end;
+	};
+
+end;
+
+local songtitle = GAMESTATE:GetCurrentSong():GetDisplayMainTitle();
+
+t[#t+1] = LoadFont("hdkarnivore 24px")..{
+	InitCommand=cmd(settext,songtitle;y,SCREEN_BOTTOM-10;x,SCREEN_CENTER_X;zoom,.54);
+};
 
 return t;

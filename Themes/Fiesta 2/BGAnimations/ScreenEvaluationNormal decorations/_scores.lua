@@ -55,18 +55,18 @@ if GAMESTATE:IsSideJoined(PLAYER_1) then
 		(pscore >= 995000 and "SSS+")	or 
 		(pscore >= 990000 and "SSS")	or 
 		(pscore >= 985000 and "SS+")	or
-		(pscore >= 980000 and "SS")	or
-		(pscore >= 975000 and "S+")	or
-		(pscore >= 970000 and "S")	or 
+		(pscore >= 980000 and "SS")		or
+		(pscore >= 975000 and "S+")		or
+		(pscore >= 970000 and "S")		or 
 		(pscore >= 960000 and "AAA+")	or 
 		(pscore >= 950000 and "AAA")	or
 		(pscore >= 925000 and "AA+")	or
-		(pscore >= 900000 and "AA")	or
-		(pscore >= 825000 and "A+")	or
-		(pscore >= 750000 and "A")	or
-		(pscore >= 650000 and "B")	or
-		(pscore >= 550000 and "C")	or
-		(pscore >= 450000 and "D") 	or
+		(pscore >= 900000 and "AA")		or
+		(pscore >= 825000 and "A+")		or
+		(pscore >= 750000 and "A")		or
+		(pscore >= 650000 and "B")		or
+		(pscore >= 550000 and "C")		or
+		(pscore >= 450000 and "D") 		or
 		"F"
 	);
 	local plate = "";

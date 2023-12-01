@@ -387,7 +387,7 @@ function GetPHighScoresFrameEval( pn )
 				elseif pscore > 1000000 then
 					pscore = 1000000;
 				end;
-				if pscore > PersonalBestPScore then
+				if pscore >= PersonalBestPScore then
 					PersonalBestIndex = i;
 					PersonalBestPScore = pscore;
 				end;
@@ -451,7 +451,7 @@ function GetPHighScoresFrameEval( pn )
 			if notestotal <= 1 then notestotal = 1 end;
 			weightednotes = perfects + 0.6*greats + 0.2*goods + 0.1*bads;
 			pscore = math.floor(((weightednotes * 0.995 + maxcombo * 0.005) / notestotal) * 1000000 );
-			if pscore > MachineBestPScore then
+			if pscore >= MachineBestPScore then
 				MachineBestIndex = i;
 				MachineBestPScore = pscore;
 				MachineBestName =  HSListMachine[i]:GetName();
