@@ -92,17 +92,19 @@ local function GetDiffNum(i)
 	--No regresa ningun step
 	if i > numSteps then return 4; end;
 	
-	style = aSteps[i]:GetStepsType();
-	description = aSteps[i]:GetDescription();
+	local style = aSteps[i]:GetStepsType();
+	local description = aSteps[i]:GetDescription();
+	local meter = aSteps[i]:GetMeter();
 
 	--Clasificacion de pasos x estilo, single, double, couple o halfdouble
 	--TODO: "StepsType_Pump_Couple"
 	
 	if style=='StepsType_Pump_Single' and string.find( description,"SP" ) then return 2;
 	elseif style=='StepsType_Pump_Single' then return 0;
-	elseif style=='StepsType_Pump_Couple' then return 3;
-	elseif ( style=='StepsType_Pump_Double' and string.find( description,"DP" ) ) or style=='StepsType_Pump_Routine'  then return 3;
-	elseif style=='StepsType_Pump_Double' or style=='StepsType_Pump_Halfdouble' then return 1;
+	elseif style=='StepsType_Pump_Routine' or (style=='StepsType_Pump_Double' and ((meter == (99 or 50)) or string.find(string.upper(description),"COOP") or string.find(string.upper(description),"CO-OP") or string.find(string.upper(description),"ROUTINE") ) ) then return 6;
+	elseif ( style=='StepsType_Pump_Double' and string.find( string.upper(description),"DP" ) ) or style=='StepsType_Pump_Couple' then return 3;
+	elseif style=='StepsType_Pump_Halfdouble' or (style=='StepsType_Pump_Double' and string.find( string.upper(description),"HALFDOUBLE" ) ) then return 5;
+	elseif style=='StepsType_Pump_Double' then return 1;
 	end;
 	
 	return 4;
@@ -119,8 +121,25 @@ function Actor:SetMeterValue(i,style)
 	end;
 	
 	local num = aSteps[i]:GetMeter();
+	local description = aSteps[i]:GetDescription();
+	local chartname = aSteps[i]:GetChartName();
+	local chartcredits = aSteps[i]:GetAuthorCredit();
+	local style = aSteps[i]:GetStepsType();
 	if num > 99 then self:settext("99"); return; end;
-	if num == 99 then self:settext("??"); return; end;
+	if style=='StepsType_Pump_Routine' or (style=='StepsType_Pump_Double' and ((num == (99 or 50)) or string.find(string.upper(description),"COOP") or string.find(string.upper(description),"CO-OP") or string.find(string.upper(description),"ROUTINE") ) ) then
+		local coop_players = "?";
+		if string.find(string.upper(description), "2P") or string.find(string.upper(chartname), "2P") or string.find(string.upper(chartcredits), "2 PLAYERS")  or string.find(string.upper(description), "2 P") or string.find(string.upper(chartname), "2 P") or string.find(string.upper(description), "TWO P") or string.find(string.upper(chartname), "TWO P") then coop_players = "2"
+		elseif string.find(string.upper(description), "3P") or string.find(string.upper(chartname), "3P") or string.find(string.upper(chartcredits), "3 PLAYERS")  or string.find(string.upper(description), "3 P") or string.find(string.upper(chartname), "3 P") or string.find(string.upper(description), "THREE P") or string.find(string.upper(chartname), "THREE P") then coop_players = "3"
+		elseif string.find(string.upper(description), "4P") or string.find(string.upper(chartname), "4P") or string.find(string.upper(chartcredits), "4 PLAYERS")  or string.find(string.upper(description), "4 P") or string.find(string.upper(chartname), "4 P") or string.find(string.upper(description), "FOUR P") or string.find(string.upper(chartname), "FOUR P") then coop_players = "4"
+		elseif string.find(string.upper(description), "5P") or string.find(string.upper(chartname), "5P") or string.find(string.upper(chartcredits), "5 PLAYERS")  or string.find(string.upper(description), "5 P") or string.find(string.upper(chartname), "5 P") or string.find(string.upper(description), "FIVE P") or string.find(string.upper(chartname), "FIVE P") then coop_players = "5"
+		elseif string.find(string.upper(description), "6P") or string.find(string.upper(chartname), "6P") or string.find(string.upper(chartcredits), "6 PLAYERS")  or string.find(string.upper(description), "6 P") or string.find(string.upper(chartname), "6 P") or string.find(string.upper(description), "SIX P") or string.find(string.upper(chartname), "SIX P") then coop_players = "6"
+		elseif string.find(string.upper(description), "7P") or string.find(string.upper(chartname), "7P") or string.find(string.upper(chartcredits), "7 PLAYERS")  or string.find(string.upper(description), "7 P") or string.find(string.upper(chartname), "7 P") or string.find(string.upper(description), "SEVEN P") or string.find(string.upper(chartname), "SEVEN P") then coop_players = "7"
+		elseif string.find(string.upper(description), "8P") or string.find(string.upper(chartname), "8P") or string.find(string.upper(chartcredits), "8 PLAYERS")  or string.find(string.upper(description), "8 P") or string.find(string.upper(chartname), "8 P") or string.find(string.upper(description), "EIGHT P") or string.find(string.upper(chartname), "EIGHT P") then coop_players = "8"
+		elseif string.find(string.upper(description), "9P") or string.find(string.upper(chartname), "9P") or string.find(string.upper(chartcredits), "9 PLAYERS")  or string.find(string.upper(description), "9 P") or string.find(string.upper(chartname), "9 P") or string.find(string.upper(description), "NINE P") or string.find(string.upper(chartname), "NINE P") then coop_players = "9"
+		elseif string.find(string.upper(description), "1P") or string.find(string.upper(chartname), "1P") or string.find(string.upper(chartcredits), "1 PLAYER")  or string.find(string.upper(description), "1 P") or string.find(string.upper(chartname), "1 P") or string.find(string.upper(description), "ONE P") or string.find(string.upper(chartname), "ONE P") then coop_players = "1"
+		end;
+		self:settext("X"..coop_players); return;
+	end;
 	if num == -1 then self:settext("!!"); return; end;
 	
 	self:settext( string.format("%.2d",num) );
@@ -134,18 +153,6 @@ local function GetSmallBallLabel( i )
 end;
 
 local function GetUnderBallLabel( i )
-	if i > numSteps then return 2; end;	--empty
-	local cur_step = aSteps[i];
-
-	local style = cur_step:GetStepsType();
-	local description = cur_step:GetDescription();
-	
-	if ( style=='StepsType_Pump_Double' and string.find( string.upper(description),"HALFDOUBLE" ) ) or style=='StepsType_Pump_Halfdouble' then
-		return 0;
-	elseif ( style=='StepsType_Pump_Couple' ) then
-		return 1
-	end;
-	
 	return 2;
 end;
 
@@ -246,7 +253,7 @@ for i=1,iChartsToShow do
 	}
 	
 	--	DifficultyBalls --
-	t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/fullbar balls 5x1.png") )..{
+	t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/fullbar balls 7x1.png") )..{
 		InitCommand=cmd(x,Xpos[i];pause);
 		UpDateCommand=cmd( setstate,GetDiffNum(i);visible,GetDiffNum(i)~=4 );
 	}
@@ -279,7 +286,29 @@ for i=1,iChartsToShow do
 		GoBackSelectingSongMessageCommand=cmd(x,Xpos[i]+1;linear,.3;y,-1.1);
 		UpDateCommand=cmd( SetMeterValue,i,3 );
 	};
+
+	t[#t+1] = LoadFont("N_DOUBLE_N") .. {
+		InitCommand=cmd(x,Xpos[i]+1;y,-1.1);
+		StartSelectingStepsMessageCommand=cmd(x,Xpos[i]+1;linear,.3;y,0);
+		GoBackSelectingSongMessageCommand=cmd(x,Xpos[i]+1;linear,.3;y,-1.1);
+		UpDateCommand=cmd( SetMeterValue,i,5 );
+	};
+
+	t[#t+1] = LoadFont("N_COOP") .. {
+		InitCommand=cmd(x,Xpos[i]+1;y,-1.1);
+		StartSelectingStepsMessageCommand=cmd(x,Xpos[i]+1;linear,.3;y,0);
+		GoBackSelectingSongMessageCommand=cmd(x,Xpos[i]+1;linear,.3;y,-1.1);
+		UpDateCommand=cmd( SetMeterValue,i,6 );
+	};
 	
+	-- Labels --
+	t[#t+1] = LoadActor( THEME:GetPathG("","Common Resources/B_LABELS 1x11.png") ) .. {
+		InitCommand=cmd(x,Xpos[i];pause;y,-22;zoom,.55);
+		StartSelectingStepsMessageCommand=cmd(x,Xpos[i];linear,.3;y,-21);
+		GoBackSelectingSongMessageCommand=cmd(x,Xpos[i];linear,.3;y,-22);
+		UpDateCommand=cmd( setstate,GetSmallBallLabel(i) );
+	};
+
 	-- Top Rank
 	t[#t+1] = Def.Sprite {
 		Name="RankP1";
@@ -310,19 +339,11 @@ for i=1,iChartsToShow do
 		end;
 	};
 	
-	-- Labels --
-	t[#t+1] = LoadActor( THEME:GetPathG("","Common Resources/B_LABELS 1x11.png") ) .. {
-		InitCommand=cmd(x,Xpos[i];pause;y,-22;zoom,.55);
-		StartSelectingStepsMessageCommand=cmd(x,Xpos[i];linear,.3;y,-21);
-		GoBackSelectingSongMessageCommand=cmd(x,Xpos[i];linear,.3;y,-22);
-		UpDateCommand=cmd( setstate,GetSmallBallLabel(i) );
-	};
-	
 	-- Under Labels --
-	t[#t+1] = LoadActor( THEME:GetPathG("","Common Resources/B_UNDERLABELS 1x3") ).. {
-		InitCommand=cmd(x,Xpos[i];pause;y,19;zoom,.5);
-		UpDateCommand=cmd( setstate,GetUnderBallLabel(i) );
-	};
+--	t[#t+1] = LoadActor( THEME:GetPathG("","Common Resources/B_UNDERLABELS 1x3") ).. {
+--		InitCommand=cmd(x,Xpos[i];pause;y,19;zoom,.5);
+--		UpDateCommand=cmd( setstate,GetUnderBallLabel(i) );
+--	};
 	
 end;
 

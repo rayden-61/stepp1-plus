@@ -528,15 +528,34 @@ end;
 -- Obtiene el color de la esfera, seg�n el estilo y descripci�n del chart
 function GetDiffNumberBall( cur_steps )
 	if cur_steps == nil then return 0; end;
-	style = cur_steps:GetStepsType();
-	description = cur_steps:GetDescription();
+	local style = cur_steps:GetStepsType();
+	local description = cur_steps:GetDescription();
+	local meter = cur_steps:GetMeter();
 
 	if style=='StepsType_Pump_Single' and string.find(description,"SP") then return(1);
 	elseif style=='StepsType_Pump_Single' then return (0);
-	elseif (style=='StepsType_Pump_Couple') then return (5);
-	elseif (style=='StepsType_Pump_Double' and string.find(description,"DP")) or style=='StepsType_Pump_Routine' then return(3);
+	elseif style=='StepsType_Pump_Routine' or (style=='StepsType_Pump_Double' and ((meter == (99 or 50)) or string.find(string.upper(description),"COOP") or string.find(string.upper(description),"CO-OP") or string.find(string.upper(description),"ROUTINE") ) ) then return (5);
+	elseif ( style=='StepsType_Pump_Double' and string.find( string.upper(description),"DP" ) ) or style=='StepsType_Pump_Couple' then return(3);
 	elseif (style=='StepsType_Pump_Double' and string.find( string.upper(description),"HALFDOUBLE" ) ) or style=='StepsType_Pump_Halfdouble' then return (4);
 	elseif style=='StepsType_Pump_Double' then return (2);
+	end;
+	
+	return 0;
+end;
+
+-- Get simplified ball color
+function GetSimpleDiffNumberBall( cur_steps )
+	if cur_steps == nil then return 0; end;
+	local style = cur_steps:GetStepsType();
+	local description = cur_steps:GetDescription();
+	local meter = cur_steps:GetMeter();
+
+	if style=='StepsType_Pump_Single' and string.find(description,"SP") then return(2);
+	elseif style=='StepsType_Pump_Single' then return (0);
+	elseif style=='StepsType_Pump_Routine' or (style=='StepsType_Pump_Double' and ((meter == (99 or 50)) or string.find(string.upper(description),"COOP") or string.find(string.upper(description),"CO-OP") or string.find(string.upper(description),"ROUTINE") ) ) then return (6);
+	elseif ( style=='StepsType_Pump_Double' and string.find( string.upper(description),"DP" ) ) or style=='StepsType_Pump_Couple' then return(3);
+	elseif (style=='StepsType_Pump_Double' and string.find( string.upper(description),"HALFDOUBLE" ) ) or style=='StepsType_Pump_Halfdouble' then return (5);
+	elseif style=='StepsType_Pump_Double' then return (1);
 	end;
 	
 	return 0;
@@ -549,30 +568,41 @@ function Actor:SetLevelTextByDigit( cur_steps, digit )
 	local description = cur_steps:GetDescription();
 	local row = 0;
 	local column = 0;
+	local meter = cur_steps:GetMeter();
+	local chartname = cur_steps:GetChartName();
+	local chartcredits = cur_steps:GetAuthorCredit();
 	
+	if meter>99 then meter = 99; end;
+	if digit ==1 then
+		column = math.floor( (meter/10) );
+	elseif digit ==2 then
+		column = meter - math.floor( (meter/10) )*10;
+	end;
+
 	if style=='StepsType_Pump_Single' and string.find(description,"SP") then row = 4;
 	elseif style=='StepsType_Pump_Single' then row = 0;
-	elseif (style=='StepsType_Pump_Couple') then row = 5;
-	elseif (style=='StepsType_Pump_Double' and string.find(description,"DP")) or style=='StepsType_Pump_Routine' then row = 5;
+	elseif style=='StepsType_Pump_Routine' or (style=='StepsType_Pump_Double' and ((meter == (99 or 50)) or string.find(string.upper(description),"COOP") or string.find(string.upper(description),"CO-OP") or string.find(string.upper(description),"ROUTINE") ) ) then
+		row = 6;
+		if digit == 1 then 
+			column = 12;
+		elseif digit == 2 then
+			column = 10;
+			if string.find(string.upper(description), "2P") or string.find(string.upper(chartname), "2P") or string.find(string.upper(chartcredits), "2 PLAYERS")  or string.find(string.upper(description), "2 P") or string.find(string.upper(chartname), "2 P") or string.find(string.upper(description), "TWO P") or string.find(string.upper(chartname), "TWO P") then column = 2
+			elseif string.find(string.upper(description), "3P") or string.find(string.upper(chartname), "3P") or string.find(string.upper(chartcredits), "3 PLAYERS")  or string.find(string.upper(description), "3 P") or string.find(string.upper(chartname), "3 P") or string.find(string.upper(description), "THREE P") or string.find(string.upper(chartname), "THREE P") then column = 3
+			elseif string.find(string.upper(description), "4P") or string.find(string.upper(chartname), "4P") or string.find(string.upper(chartcredits), "4 PLAYERS")  or string.find(string.upper(description), "4 P") or string.find(string.upper(chartname), "4 P") or string.find(string.upper(description), "FOUR P") or string.find(string.upper(chartname), "FOUR P") then column = 4
+			elseif string.find(string.upper(description), "5P") or string.find(string.upper(chartname), "5P") or string.find(string.upper(chartcredits), "5 PLAYERS")  or string.find(string.upper(description), "5 P") or string.find(string.upper(chartname), "5 P") or string.find(string.upper(description), "FIVE P") or string.find(string.upper(chartname), "FIVE P") then column = 5
+			elseif string.find(string.upper(description), "6P") or string.find(string.upper(chartname), "6P") or string.find(string.upper(chartcredits), "6 PLAYERS")  or string.find(string.upper(description), "6 P") or string.find(string.upper(chartname), "6 P") or string.find(string.upper(description), "SIX P") or string.find(string.upper(chartname), "SIX P") then column = 6
+			elseif string.find(string.upper(description), "7P") or string.find(string.upper(chartname), "7P") or string.find(string.upper(chartcredits), "7 PLAYERS")  or string.find(string.upper(description), "7 P") or string.find(string.upper(chartname), "7 P") or string.find(string.upper(description), "SEVEN P") or string.find(string.upper(chartname), "SEVEN P") then column = 7
+			elseif string.find(string.upper(description), "8P") or string.find(string.upper(chartname), "8P") or string.find(string.upper(chartcredits), "8 PLAYERS")  or string.find(string.upper(description), "8 P") or string.find(string.upper(chartname), "8 P") or string.find(string.upper(description), "EIGHT P") or string.find(string.upper(chartname), "EIGHT P") then column = 8
+			elseif string.find(string.upper(description), "9P") or string.find(string.upper(chartname), "9P") or string.find(string.upper(chartcredits), "9 PLAYERS")  or string.find(string.upper(description), "9 P") or string.find(string.upper(chartname), "9 P") or string.find(string.upper(description), "NINE P") or string.find(string.upper(chartname), "NINE P") then column = 9
+			elseif string.find(string.upper(description), "1P") or string.find(string.upper(chartname), "1P") or string.find(string.upper(chartcredits), "1 PLAYER")  or string.find(string.upper(description), "1 P") or string.find(string.upper(chartname), "1 P") or string.find(string.upper(description), "ONE P") or string.find(string.upper(chartname), "ONE P") then column = 1
+			end;
+		end;
+	elseif ( style=='StepsType_Pump_Double' and string.find( string.upper(description),"DP" ) ) or style=='StepsType_Pump_Couple' then row = 5;
 	elseif (style=='StepsType_Pump_Double' and string.find( string.upper(description),"HALFDOUBLE" ) ) or style=='StepsType_Pump_Halfdouble' then row = 1;
 	elseif style=='StepsType_Pump_Double' then row = 1;
-	end;
-	
-	local meter = cur_steps:GetMeter();
-	
-	
-	
-	if meter==99 then column = 10;
-	elseif meter==99 then column = 11;
-	else
-		if meter>99 then meter = 99; end;
-		if digit ==1 then
-			column = math.floor( (meter/10) );
-		elseif digit ==2 then
-			column = meter - math.floor( (meter/10) )*10;
-		end;
-	end;
-	self:setstate( column + row*12 );
+	end
+	self:setstate( column + row*13 );
 end;
 
 -- Obtiene la etiqueta superior para mostrar en la esfera
@@ -581,16 +611,16 @@ local function GetBallLabel( cur_steps )
 end;
 
 -- Obtiene la etiqueta inferior para mostrar en la esfera
-local function GetBallUnderLabel( cur_steps )
-	local style = cur_steps:GetStepsType();
-	local description = cur_steps:GetDescription();
-	
-	if (style=='StepsType_Pump_Double' and string.find( string.upper(description),"HALFDOUBLE" ) ) or style=='StepsType_Pump_Halfdouble' then return 0;
-	elseif (style=='StepsType_Pump_Couple') then return 1;
-	end;
-	
-	return 2; --empty
-end;
+--local function GetBallUnderLabel( cur_steps )
+--	local style = cur_steps:GetStepsType();
+--	local description = cur_steps:GetDescription();
+--	
+--	if (style=='StepsType_Pump_Double' and string.find( string.upper(description),"HALFDOUBLE" ) ) or style=='StepsType_Pump_Halfdouble' then return 0;
+--	elseif (style=='StepsType_Pump_Couple') then return 1;
+--	end;
+--	
+--	return 2; --empty
+--end;
 
 -- Funci�n para obtener la esfera de nivel
 function GetBallLevel( pn, show_dir_arrows )
@@ -619,7 +649,7 @@ function GetBallLevel( pn, show_dir_arrows )
 			
 			-- Actualizo etiquetas
 			(cmd(stoptweening;diffusealpha,1;sleep,.03;setstate,GetBallLabel(cur_steps)))( this.Label );
-			(cmd(stoptweening;diffusealpha,1;sleep,.03;setstate,GetBallUnderLabel(cur_steps)))( this.Underlabel );
+--			(cmd(stoptweening;diffusealpha,1;sleep,.03;setstate,GetBallUnderLabel(cur_steps)))( this.Underlabel );
 		end;
 		children = {
 			-- Frame --
@@ -652,13 +682,13 @@ function GetBallLevel( pn, show_dir_arrows )
 			};
 			
 			-- Level (numeros) Digit 1 --
-			LoadActor( THEME:GetPathG("","ScreenSelectMusic/Difficulty_Bigballs numbers 12x6.png") )..{
+			LoadActor( THEME:GetPathG("","ScreenSelectMusic/Difficulty_Bigballs numbers 13x7.png") )..{
 				Name="LevelDigit1";
 				InitCommand=cmd(y,2;pause;x,-22);
 			};
 			
 			-- Level (numeros) Digit 2 --
-			LoadActor( THEME:GetPathG("","ScreenSelectMusic/Difficulty_Bigballs numbers 12x6.png") )..{
+			LoadActor( THEME:GetPathG("","ScreenSelectMusic/Difficulty_Bigballs numbers 13x7.png") )..{
 				Name="LevelDigit2";
 				InitCommand=cmd(y,2;pause;x,22);
 			};
@@ -694,11 +724,11 @@ function GetBallLevel( pn, show_dir_arrows )
 			};
 			
 			-- Under labels --
-			LoadActor( THEME:GetPathG("","Common Resources/B_UNDERLABELS 1x3.png") )..{
-				Name="Underlabel";
-				InitCommand=cmd(y,40;pause;setstate,2);
+--			LoadActor( THEME:GetPathG("","Common Resources/B_UNDERLABELS 1x3.png") )..{
+--				Name="Underlabel";
+--				InitCommand=cmd(visible,show_labels;y,40;pause;setstate,2);
 				--OffCommand=cmd(stoptweening;diffusealpha,1;sleep,.2;linear,.05;diffusealpha,0);
-			};
+--			};
 			
 			-- Right Arrow --
 			LoadActor( THEME:GetPathG("","ScreenSelectMusic/Difficulty_BigBalls arrow.png") )..{
@@ -755,6 +785,89 @@ function GetBallLevel( pn, show_dir_arrows )
 	};
 
 	return k;
+end;
+
+
+-- Simplified Ball
+function GetSimpleBallLevel( pn )
+	local l = Def.ActorFrame {		
+		InitCommand=cmd(basezoom,.67);
+		ShowUpCommand=cmd(playcommand,"Update";playcommand,'ShowUpInternal');
+		HideCommand=cmd(playcommand,'HideInternal');
+		UpdateCommand=function(self)
+			local this = self:GetChildren();
+			local cur_steps = GAMESTATE:GetCurrentSteps(pn);
+			
+			-- Actualizo color esfera de nivel
+			(cmd(stoptweening;diffusealpha,1;setstate,GetSimpleDiffNumberBall(cur_steps);basezoom,2))( this.Bigballs );
+			
+			-- Actualizo digitos de nivel
+			(cmd(stoptweening;diffusealpha,1;SetLevelTextByDigit,cur_steps,1))( this.LevelDigit1 );
+			(cmd(stoptweening;diffusealpha,1;SetLevelTextByDigit,cur_steps,2))( this.LevelDigit2 );
+			
+		end;
+		children = {
+			-- Frame --
+			LoadActor( THEME:GetPathG("","ScreenSelectMusic/Difficulty_Bigballs frame.png") )..{
+				InitCommand=cmd(pause);
+				UpdateInternalCommand=cmd(stoptweening;diffusealpha,1);
+			};
+			
+			-- Glow Spin --
+			LoadActor( THEME:GetPathG("","ScreenSelectMusic/Difficulty_Bigballs glow spin.png") )..{
+				InitCommand=cmd(blend,'BlendMode_Add';diffuse,0,1,1,1);
+				OffCommand=cmd(stoptweening;diffusealpha,0);
+				ShowUpInternalCommand=cmd(stoptweening;diffusealpha,0;sleep,.2;queuecommand,'Spin');
+				UpdateInternalCommand=cmd(stoptweening;queuecommand,'Spin');
+				SpinCommand=cmd(stoptweening;diffusealpha,.8;rotationz,0;linear,.2;rotationz,360;diffusealpha,0);
+			};
+			
+			LoadActor( THEME:GetPathG("","ScreenSelectMusic/Difficulty_Bigballs glow spin.png") )..{
+				InitCommand=cmd(blend,'BlendMode_Add');
+				OffCommand=cmd(stoptweening;diffusealpha,0);
+				ShowUpInternalCommand=cmd(stoptweening;diffusealpha,0;sleep,.4;queuecommand,'Spin');
+				HideInternalCommand=cmd(stoptweening;diffusealpha,0);
+				SpinCommand=cmd(stoptweening;diffusealpha,.1;rotationz,0;linear,2;rotationz,360;queuecommand,'Spin');
+			};
+			
+			-- Esfera del nivel --
+			LoadActor( THEME:GetPathG("","ScreenSelectMusic/fullbar balls 7x1.png") )..{
+				Name="Bigballs";
+				InitCommand=cmd(pause);
+			};
+			
+			-- Level (numeros) Digit 1 --
+			LoadActor( THEME:GetPathG("","ScreenSelectMusic/Difficulty_Bigballs numbers 13x7.png") )..{
+				Name="LevelDigit1";
+				InitCommand=cmd(y,2;pause;x,-22);
+			};
+			
+			-- Level (numeros) Digit 2 --
+			LoadActor( THEME:GetPathG("","ScreenSelectMusic/Difficulty_Bigballs numbers 13x7.png") )..{
+				Name="LevelDigit2";
+				InitCommand=cmd(y,2;pause;x,22);
+			};
+			
+			-- Glow Side to side --
+			LoadActor( THEME:GetPathG("","ScreenSelectMusic/Difficulty_Bigballs glow sidetoside.png") )..{
+				InitCommand=cmd(blend,'BlendMode_Add';diffuse,0,1,1,1);
+				ShowUpInternalCommand=cmd(stoptweening;diffusealpha,0;zoom,1;horizalign,center;x,0;sleep,.2;diffusealpha,1;linear,.2;diffusealpha,0);
+				HideInternalCommand=cmd(stoptweening;diffusealpha,0);
+				OffCommand=cmd(stoptweening;diffusealpha,0);
+				UpdateInternalCommand=function(self,params)
+					if params.Direction == -1 then	--der
+						(cmd(stoptweening;horizalign,left;diffusealpha,0;zoomx,0;x,-55;linear,.1;zoomx,1;diffusealpha,1))(self);
+						(cmd(horizalign,right;diffusealpha,1;zoomx,1;x,55;linear,.1;zoomx,0;diffusealpha,0))(self);
+					elseif params.Direction == 1 then	--izq
+						(cmd(stoptweening;horizalign,right;diffusealpha,0;zoomx,0;x,55;linear,.1;zoomx,1;diffusealpha,1))(self);
+						(cmd(horizalign,left;diffusealpha,1;zoomx,1;x,-55;linear,.1;zoomx,0;diffusealpha,0))(self);
+					end;
+				end;
+			};
+		};
+	};
+
+	return l;
 end;
 
 --/////////////////////////////////////////////////////////////////////////////////////////////////////////////
