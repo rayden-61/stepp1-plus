@@ -109,6 +109,85 @@ function AddDots( score )
 	end;
 end;
 
+
+--/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-- P. SCORE FUNCTIONS --
+
+
+function CalcPScore(perfects, greats, goods, bads, misses, maxcombo)
+	local notestotal = perfects + greats + goods + bads + misses;
+	if notestotal <= 1 then notestotal = 1 end;
+	local weightednotes = perfects + 0.6*greats + 0.2*goods + 0.1*bads;
+	local pscore = math.floor(((weightednotes * 0.995 + maxcombo * 0.005) / notestotal) * 1000000 );
+	if pscore < 0 then
+		pscore = 0;
+	elseif pscore > 1000000 then
+		pscore = 1000000;
+	end
+	return pscore;
+end
+
+--
+
+function CalcPGrade(pscore)
+	local pgrade = (
+			(pscore >= 995000 and "SSS+")	or 
+			(pscore >= 990000 and "SSS")	or 
+			(pscore >= 985000 and "SS+")	or
+			(pscore >= 980000 and "SS")		or
+			(pscore >= 975000 and "S+")		or
+			(pscore >= 970000 and "S")		or 
+			(pscore >= 960000 and "AAA+")	or 
+			(pscore >= 950000 and "AAA")	or
+			(pscore >= 925000 and "AA+")	or
+			(pscore >= 900000 and "AA")		or
+			(pscore >= 825000 and "A+")		or
+			(pscore >= 750000 and "A")		or
+			(pscore >= 650000 and "B")		or
+			(pscore >= 550000 and "C")		or
+			(pscore >= 450000 and "D") 		or
+			"F"
+			);
+	return pgrade;
+end
+
+--
+
+function CalcPlate(greats,goods,bads,misses)
+	local plate = (
+		(misses >= 21 and "Rough Game")		or 
+		(misses >= 11 and "Fair Game")		or
+		(misses >= 6 and "Talented Game")	or
+		(misses >= 1 and "Marvelous Game")	or
+		(bads >= 1 and "Superb Game")		or 
+		(goods >= 1 and "Extreme Game")		or 
+		(greats >= 1 and "Ultimate Game")	or
+		"Perfect Game"
+		);
+	return plate;
+end;
+
+--
+
+function CalcPlateInitials(greats,goods,bads,misses)
+	local plate = (
+		(misses >= 21 and "RG")		or 
+		(misses >= 11 and "FG")		or
+		(misses >= 6 and "TG")		or
+		(misses >= 1 and "MG")		or
+		(bads >= 1 and "SG")		or 
+		(goods >= 1 and "EG")		or 
+		(greats >= 1 and "UG")		or
+		"PG"
+		);
+	return plate;
+end;
+
+	
+
+--/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 function GetHighScoresFrame( pn, appear_on_start )
 local t = Def.ActorFrame {
 	OnCommand=function(self)
@@ -266,33 +345,23 @@ function GetPHighScoresFrame( pn, appear_on_start )
 					PersonalBestIndex = 1;
 					PersonalBestPScore = 0;
 					if GAMESTATE:HasProfile(pn) then
-						local HighScoreList = PROFILEMAN:GetProfile( pn ):GetHighScoreList(cur_song,cur_steps):GetHighScores();
-						if (#HighScoreList ~= 0) then
+						local HSList = PROFILEMAN:GetProfile( pn ):GetHighScoreList(cur_song,cur_steps):GetHighScores();
+						if (#HSList ~= 0) then
 							local perfects = 0;
 							local greats = 0;
 							local goods = 0;
 							local bads = 0;
 							local misses = 0;
 							local maxcombo = 0;
-							local notestotal = 0;
-							local weightednotes = 0;
 							local pscore = 0;
-							for i = 1,#HighScoreList do
-								perfects = HighScoreList[i]:GetTapNoteScore('TapNoteScore_W2') + HighScoreList[i]:GetTapNoteScore('TapNoteScore_CheckpointHit');
-								greats = HighScoreList[i]:GetTapNoteScore('TapNoteScore_W3');
-								goods = HighScoreList[i]:GetTapNoteScore('TapNoteScore_W4');
-								bads = HighScoreList[i]:GetTapNoteScore('TapNoteScore_W5');
-								misses = HighScoreList[i]:GetTapNoteScore('TapNoteScore_Miss') + HighScoreList[i]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
-								maxcombo = HighScoreList[i]:GetMaxCombo();
-								notestotal = perfects + greats + goods + bads + misses;
-								if notestotal <= 1 then notestotal = 1 end;
-								weightednotes = perfects + 0.6*greats + 0.2*goods + 0.1*bads;
-								pscore = math.floor(((weightednotes * 0.995 + maxcombo * 0.005) / notestotal) * 1000000 );
-								if pscore < 0 then
-									pscore = 0;
-								elseif pscore > 1000000 then
-									pscore = 1000000;
-								end;
+							for i = 1,#HSList do
+								perfects = HSList[i]:GetTapNoteScore('TapNoteScore_W2') + HSList[i]:GetTapNoteScore('TapNoteScore_CheckpointHit');
+								greats = HSList[i]:GetTapNoteScore('TapNoteScore_W3');
+								goods = HSList[i]:GetTapNoteScore('TapNoteScore_W4');
+								bads = HSList[i]:GetTapNoteScore('TapNoteScore_W5');
+								misses = HSList[i]:GetTapNoteScore('TapNoteScore_Miss') + HSList[i]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
+								maxcombo = HSList[i]:GetMaxCombo();
+								pscore = CalcPScore(perfects, greats, goods, bads, misses, maxcombo);
 								if pscore >= PersonalBestPScore then
 									PersonalBestIndex = i;
 									PersonalBestPScore = pscore;
@@ -317,32 +386,46 @@ function GetPHighScoresFrame( pn, appear_on_start )
 
 			--Personal Best P.Grade
 			LoadFont("hdkarnivore 24px")..{
-				InitCommand=cmd(settext,"";horizalign,left;zoom,.34;x,19;y,-14);
+				InitCommand=cmd(settext,"";horizalign,left;zoom,.32;x,19;y,-12);
 				RefreshTextCommand=function(self)
 					local cur_song = GAMESTATE:GetCurrentSong();
 					local cur_steps = GAMESTATE:GetCurrentSteps(pn);
 					if GAMESTATE:HasProfile(pn) then
 						local HSList = PROFILEMAN:GetProfile( pn ):GetHighScoreList(cur_song,cur_steps):GetHighScores();
 						if (#HSList ~= 0) then
-								pgrade = (
-									(PersonalBestPScore >= 995000 and "SSS+")	or 
-									(PersonalBestPScore >= 990000 and "SSS")	or 
-									(PersonalBestPScore >= 985000 and "SS+")	or
-									(PersonalBestPScore >= 980000 and "SS")		or
-									(PersonalBestPScore >= 975000 and "S+")		or
-									(PersonalBestPScore >= 970000 and "S")		or 
-									(PersonalBestPScore >= 960000 and "AAA+")	or 
-									(PersonalBestPScore >= 950000 and "AAA")	or
-									(PersonalBestPScore >= 925000 and "AA+")	or
-									(PersonalBestPScore >= 900000 and "AA")		or
-									(PersonalBestPScore >= 825000 and "A+")		or
-									(PersonalBestPScore >= 750000 and "A")		or
-									(PersonalBestPScore >= 650000 and "B")		or
-									(PersonalBestPScore >= 550000 and "C")		or
-									(PersonalBestPScore >= 450000 and "D") 		or
-									"F"
-								);
+								pgrade = CalcPGrade(PersonalBestPScore);
 								self:settext( pgrade );
+						else
+							self:settext("");
+						end;
+					else
+						self:settext("");
+					end;
+				end;
+				ChangeStepsMessageCommand=function(self,params)
+					if params.Player ~= pn then return; end;
+					(cmd(stoptweening;sleep,.01;queuecommand,'RefreshText'))(self);
+				end;
+				StartSelectingStepsMessageCommand=cmd(stoptweening;settext,"";sleep,.2;queuecommand,'RefreshText');
+				GoBackSelectingSongMessageCommand=cmd(finishtweening;settext,"");
+				OffCommand=cmd(stoptweening;visible,false);
+			};
+
+			--Personal Best Plate
+			LoadFont("_karnivore lite white")..{
+				InitCommand=cmd(settext,"";horizalign,left;zoom,.36;x,19;y,-23);
+				RefreshTextCommand=function(self)
+					local cur_song = GAMESTATE:GetCurrentSong();
+					local cur_steps = GAMESTATE:GetCurrentSteps(pn);
+					if GAMESTATE:HasProfile(pn) then
+						local HSList = PROFILEMAN:GetProfile( pn ):GetHighScoreList(cur_song,cur_steps):GetHighScores();
+						if (#HSList ~= 0) then
+							greats = HSList[PersonalBestIndex]:GetTapNoteScore('TapNoteScore_W3');
+							goods = HSList[PersonalBestIndex]:GetTapNoteScore('TapNoteScore_W4');
+							bads = HSList[PersonalBestIndex]:GetTapNoteScore('TapNoteScore_W5');
+							misses = HSList[PersonalBestIndex]:GetTapNoteScore('TapNoteScore_Miss') + HSList[PersonalBestIndex]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
+							plate = CalcPlateInitials(greats,goods,bads,misses);
+							self:settext( plate );
 						else
 							self:settext("");
 						end;
@@ -377,8 +460,6 @@ function GetPHighScoresFrame( pn, appear_on_start )
 						local bads = 0;
 						local misses = 0;		
 						local maxcombo = 0;
-						local notestotal = 0;
-						local weightednotes = 0;
 						local pscore = 0;
 						for i = 1,#HSList do
 							perfects = HSList[i]:GetTapNoteScore('TapNoteScore_W2') + HSList[i]:GetTapNoteScore('TapNoteScore_CheckpointHit');
@@ -387,10 +468,7 @@ function GetPHighScoresFrame( pn, appear_on_start )
 							bads = HSList[i]:GetTapNoteScore('TapNoteScore_W5');
 							misses = HSList[i]:GetTapNoteScore('TapNoteScore_Miss') + HSList[i]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
 							maxcombo = HSList[i]:GetMaxCombo();
-							notestotal = perfects + greats + goods + bads + misses;
-							if notestotal <= 1 then notestotal = 1 end;
-							weightednotes = perfects + 0.6*greats + 0.2*goods + 0.1*bads;
-							pscore = math.floor(((weightednotes * 0.995 + maxcombo * 0.005) / notestotal) * 1000000 );
+							pscore = CalcPScore(perfects, greats,goods,bads,misses,maxcombo);
 							if pscore >= MachineBestPScore then
 								MachineBestIndex = i;
 								MachineBestPScore = pscore;
@@ -435,32 +513,42 @@ function GetPHighScoresFrame( pn, appear_on_start )
 
 			--machine best hs p.grade
 			LoadFont("hdkarnivore 24px")..{
-				InitCommand=cmd(settext,"";horizalign,left;zoom,.34;x,19;y,21);
+				InitCommand=cmd(settext,"";horizalign,left;zoom,.32;x,19;y,22);
 				RefreshTextCommand=function(self)
 					local cur_song = GAMESTATE:GetCurrentSong();
 					local cur_steps = GAMESTATE:GetCurrentSteps(pn);
 					local HSList = PROFILEMAN:GetMachineProfile():GetHighScoreList(cur_song,cur_steps):GetHighScores();
 					if (#HSList ~= 0) then
 						local pgrade = "";
-						pgrade = (
-							(MachineBestPScore >= 995000 and "SSS+")	or 
-							(MachineBestPScore >= 990000 and "SSS")		or 
-							(MachineBestPScore >= 985000 and "SS+")		or
-							(MachineBestPScore >= 980000 and "SS")		or
-							(MachineBestPScore >= 975000 and "S+")		or
-							(MachineBestPScore >= 970000 and "S")		or 
-							(MachineBestPScore >= 960000 and "AAA+")	or 
-							(MachineBestPScore >= 950000 and "AAA")		or
-							(MachineBestPScore >= 925000 and "AA+")		or
-							(MachineBestPScore >= 900000 and "AA")		or
-							(MachineBestPScore >= 825000 and "A+")		or
-							(MachineBestPScore >= 750000 and "A")		or
-							(MachineBestPScore >= 650000 and "B")		or
-							(MachineBestPScore >= 550000 and "C")		or
-							(MachineBestPScore >= 450000 and "D") 		or
-							"F"
-						);
+						pgrade = CalcPGrade(MachineBestPScore);
 						self:settext( pgrade );
+					else
+						self:settext("")
+					end;
+				end;
+				ChangeStepsMessageCommand=function(self,params)
+					if params.Player ~= pn then return; end;
+					(cmd(stoptweening;sleep,.01;queuecommand,'RefreshText'))(self);
+				end;
+				StartSelectingStepsMessageCommand=cmd(stoptweening;settext,"";sleep,.21;queuecommand,'RefreshText');
+				GoBackSelectingSongMessageCommand=cmd(stoptweening;settext,"");
+				OffCommand=cmd(stoptweening;visible,false);
+			};
+
+			--machine best hs plate
+			LoadFont("_karnivore lite white")..{
+				InitCommand=cmd(settext,"";horizalign,left;zoom,.36;x,19;y,12);
+				RefreshTextCommand=function(self)
+					local cur_song = GAMESTATE:GetCurrentSong();
+					local cur_steps = GAMESTATE:GetCurrentSteps(pn);
+					local HSList = PROFILEMAN:GetMachineProfile():GetHighScoreList(cur_song,cur_steps):GetHighScores();
+					if (#HSList ~= 0) then
+						greats = HSList[MachineBestIndex]:GetTapNoteScore('TapNoteScore_W3');
+						goods = HSList[MachineBestIndex]:GetTapNoteScore('TapNoteScore_W4');
+						bads = HSList[MachineBestIndex]:GetTapNoteScore('TapNoteScore_W5');
+						misses = HSList[MachineBestIndex]:GetTapNoteScore('TapNoteScore_Miss') + HSList[PersonalBestIndex]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
+						plate = CalcPlateInitials(greats,goods,bads,misses);
+						self:settext( plate );
 					else
 						self:settext("")
 					end;
@@ -534,7 +622,7 @@ function GetDiffNumberBall( cur_steps )
 
 	if style=='StepsType_Pump_Single' and string.find(description,"SP") then return(1);
 	elseif style=='StepsType_Pump_Single' then return (0);
-	elseif style=='StepsType_Pump_Routine' or (style=='StepsType_Pump_Double' and ((meter == (99 or 50)) or string.find(string.upper(description),"COOP") or string.find(string.upper(description),"CO-OP") or string.find(string.upper(description),"ROUTINE") ) ) then return (5);
+	elseif style=='StepsType_Pump_Routine' or (description ~= "RANDOMSONGS" and style=='StepsType_Pump_Double' and ((meter == (99 or 50)) or string.find(string.upper(description),"COOP") or string.find(string.upper(description),"CO-OP") or string.find(string.upper(description),"ROUTINE") ) ) then return (5);
 	elseif ( style=='StepsType_Pump_Double' and string.find( string.upper(description),"DP" ) ) or style=='StepsType_Pump_Couple' then return(3);
 	elseif (style=='StepsType_Pump_Double' and string.find( string.upper(description),"HALFDOUBLE" ) ) or style=='StepsType_Pump_Halfdouble' then return (4);
 	elseif style=='StepsType_Pump_Double' then return (2);
@@ -573,15 +661,19 @@ function Actor:SetLevelTextByDigit( cur_steps, digit )
 	local chartcredits = cur_steps:GetAuthorCredit();
 	
 	if meter>99 then meter = 99; end;
-	if digit ==1 then
-		column = math.floor( (meter/10) );
-	elseif digit ==2 then
-		column = meter - math.floor( (meter/10) )*10;
+	if meter == 99 then
+		column = 10;
+	else
+		if digit ==1 then
+			column = math.floor( (meter/10) );
+		elseif digit ==2 then
+			column = meter - math.floor( (meter/10) )*10;
+		end;
 	end;
 
 	if style=='StepsType_Pump_Single' and string.find(description,"SP") then row = 4;
 	elseif style=='StepsType_Pump_Single' then row = 0;
-	elseif style=='StepsType_Pump_Routine' or (style=='StepsType_Pump_Double' and ((meter == (99 or 50)) or string.find(string.upper(description),"COOP") or string.find(string.upper(description),"CO-OP") or string.find(string.upper(description),"ROUTINE") ) ) then
+	elseif style=='StepsType_Pump_Routine' or (not (string.find(description, "RANDOMSONGS")) and style=='StepsType_Pump_Double' and ((meter == (99 or 50)) or string.find(string.upper(description),"COOP") or string.find(string.upper(description),"CO-OP") or string.find(string.upper(description),"ROUTINE") ) ) then
 		row = 6;
 		if digit == 1 then 
 			column = 12;
@@ -870,5 +962,4 @@ function GetSimpleBallLevel( pn )
 	return l;
 end;
 
---/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 --/////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -101,7 +101,7 @@ local function GetDiffNum(i)
 	
 	if style=='StepsType_Pump_Single' and string.find( description,"SP" ) then return 2;
 	elseif style=='StepsType_Pump_Single' then return 0;
-	elseif style=='StepsType_Pump_Routine' or (style=='StepsType_Pump_Double' and ((meter == (99 or 50)) or string.find(string.upper(description),"COOP") or string.find(string.upper(description),"CO-OP") or string.find(string.upper(description),"ROUTINE") ) ) then return 6;
+	elseif style=='StepsType_Pump_Routine' or (not (string.find(description, "RANDOMSONGS")) and style=='StepsType_Pump_Double' and ((meter == (99 or 50)) or string.find(string.upper(description),"COOP") or string.find(string.upper(description),"CO-OP") or string.find(string.upper(description),"ROUTINE") ) ) then return 6;
 	elseif ( style=='StepsType_Pump_Double' and string.find( string.upper(description),"DP" ) ) or style=='StepsType_Pump_Couple' then return 3;
 	elseif style=='StepsType_Pump_Halfdouble' or (style=='StepsType_Pump_Double' and string.find( string.upper(description),"HALFDOUBLE" ) ) then return 5;
 	elseif style=='StepsType_Pump_Double' then return 1;
@@ -125,8 +125,8 @@ function Actor:SetMeterValue(i,style)
 	local chartname = aSteps[i]:GetChartName();
 	local chartcredits = aSteps[i]:GetAuthorCredit();
 	local style = aSteps[i]:GetStepsType();
-	if num > 99 then self:settext("99"); return; end;
-	if style=='StepsType_Pump_Routine' or (style=='StepsType_Pump_Double' and ((num == (99 or 50)) or string.find(string.upper(description),"COOP") or string.find(string.upper(description),"CO-OP") or string.find(string.upper(description),"ROUTINE") ) ) then
+	if num > 99 then self:settext("??"); return; end;
+	if style=='StepsType_Pump_Routine' or (not (string.find(description, "RANDOMSONGS")) and style=='StepsType_Pump_Double' and ((num == (99 or 50)) or string.find(string.upper(description),"COOP") or string.find(string.upper(description),"CO-OP") or string.find(string.upper(description),"ROUTINE") ) ) then
 		local coop_players = "?";
 		if string.find(string.upper(description), "2P") or string.find(string.upper(chartname), "2P") or string.find(string.upper(chartcredits), "2 PLAYERS")  or string.find(string.upper(description), "2 P") or string.find(string.upper(chartname), "2 P") or string.find(string.upper(description), "TWO P") or string.find(string.upper(chartname), "TWO P") then coop_players = "2"
 		elseif string.find(string.upper(description), "3P") or string.find(string.upper(chartname), "3P") or string.find(string.upper(chartcredits), "3 PLAYERS")  or string.find(string.upper(description), "3 P") or string.find(string.upper(chartname), "3 P") or string.find(string.upper(description), "THREE P") or string.find(string.upper(chartname), "THREE P") then coop_players = "3"
@@ -139,6 +139,7 @@ function Actor:SetMeterValue(i,style)
 		elseif string.find(string.upper(description), "1P") or string.find(string.upper(chartname), "1P") or string.find(string.upper(chartcredits), "1 PLAYER")  or string.find(string.upper(description), "1 P") or string.find(string.upper(chartname), "1 P") or string.find(string.upper(description), "ONE P") or string.find(string.upper(chartname), "ONE P") then coop_players = "1"
 		end;
 		self:settext("X"..coop_players); return;
+	elseif num == 99 then self:settext("??"); return;
 	end;
 	if num == -1 then self:settext("!!"); return; end;
 	
