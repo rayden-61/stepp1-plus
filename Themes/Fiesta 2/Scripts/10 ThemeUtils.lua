@@ -188,15 +188,15 @@ end;
 function ColorPGrade(pgrade)
 	local PGradeColor = "";
 	if pgrade == "AAA" or pgrade == "AAA+" then
-		PGradeColor = "1,1,1,0.90"; -- silver color (actually white)
+		PGradeColor =  "#FFFFFF"; -- silver color (actually white)
 	elseif string.find(pgrade, "A") then
 		PGradeColor = "0.803,0.498,0.196,1"; -- bronze color
 	elseif pgrade == "SSS" or pgrade == "SSS+" then
-		PGradeColor = "0.631,0.984,0.992,1"; -- platinum color
+		PGradeColor = "#A5FDFD"; -- platinum color
 	elseif string.find(pgrade, "S") then
-		PGradeColor = "0.831,0.686,0.215,1"; -- gold color
+		PGradeColor = "#FEE108"; -- gold color
 	else
-		PGradeColor = "0.596,0.596,0.592,0.67"; -- dark color (broken grades)
+		PGradeColor = "0.596,0.596,0.592,1"; -- dark color (broken grades)
 	end;
 	return PGradeColor;
 end;
@@ -206,9 +206,9 @@ end;
 function ColorPlate(plate)
 	local PlateColor = "";
 	if plate == "RG" or plate == "Rough Game" then
-		PlateColor = "#F99816";
+		PlateColor = "0.803,0.498,0.196,1";
 	elseif plate == "FG" or plate == "Fair Game" then
-		PlateColor = "#F99816";
+		PlateColor = "0.803,0.498,0.196,1";
 	elseif plate == "TG" or plate == "Talented Game"then
 		PlateColor = "#FFFFFF";
 	elseif plate ==	"MG" or plate == "Marvelous Game" then

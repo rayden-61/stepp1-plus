@@ -41,7 +41,7 @@ if GAMESTATE:IsSideJoined(PLAYER_1) then
 	local stagebreak = curstats:GetReachedLifeZero();
 	local pscore = CalcPScore(perfects,greats,goods,bads,misses,maxcombo);
 	local pgrade = CalcPGrade(pscore);
-	local pgradecolor = (stagebreak and "#989897") or ColorPGrade(pgrade);
+	local pgradecolor = (stagebreak and "0.596,0.596,0.592,1") or ColorPGrade(pgrade);
 	if not stagebreak and (pscore < 750000) then pgradecolor = "#03CC83"; end;
 	local plate = (stagebreak and "") or CalcPlate(greats,goods,bads,misses);
 	local platecolor = ColorPlate(plate);
@@ -77,7 +77,7 @@ if GAMESTATE:IsSideJoined(PLAYER_2) then
 	local stagebreak = curstats:GetReachedLifeZero();
 	local pscore = CalcPScore(perfects,greats,goods,bads,misses,maxcombo);
 	local pgrade = CalcPGrade(pscore);
-	local pgradecolor = (stagebreak and "#989897") or ColorPGrade(pgrade);
+	local pgradecolor = (stagebreak and "0.596,0.596,0.592,1") or ColorPGrade(pgrade);
 	if not stagebreak and (pscore < 750000) then pgradecolor = "#03CC83"; end;
 	local plate = (stagebreak and "") or CalcPlate(greats,goods,bads,misses);
 	local platecolor = ColorPlate(plate);

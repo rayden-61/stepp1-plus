@@ -32,6 +32,11 @@ if GAMESTATE:IsSideJoined(PLAYER_1) then
 			end
 		end
 	}
+
+	t[#t+1] = GetBallLevel( PLAYER_1, false )..{ 
+		InitCommand=cmd(basezoom,.57;x,cx-275;playcommand,"ShowUp";y,SCREEN_BOTTOM-40;pause;); 
+	};
+
 end
 
 if GAMESTATE:IsSideJoined(PLAYER_2) then
@@ -62,6 +67,10 @@ if GAMESTATE:IsSideJoined(PLAYER_2) then
 			end
 		end
 	}
+
+	t[#t+1] = GetBallLevel( PLAYER_2, false )..{ 
+		InitCommand=cmd(basezoom,.57;x,cx+275;playcommand,"ShowUp";y,SCREEN_BOTTOM-40;pause;); 
+	};
 end
 
 return t
