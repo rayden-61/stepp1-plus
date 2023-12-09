@@ -183,6 +183,52 @@ function CalcPlateInitials(greats,goods,bads,misses)
 	return plate;
 end;
 
+--
+
+function ColorPGrade(pgrade)
+	local PGradeColor = "";
+	if pgrade == "AAA" or pgrade == "AAA+" then
+		PGradeColor = "1,1,1,0.90"; -- silver color (actually white)
+	elseif string.find(pgrade, "A") then
+		PGradeColor = "0.803,0.498,0.196,1"; -- bronze color
+	elseif pgrade == "SSS" or pgrade == "SSS+" then
+		PGradeColor = "0.631,0.984,0.992,1"; -- platinum color
+	elseif string.find(pgrade, "S") then
+		PGradeColor = "0.831,0.686,0.215,1"; -- gold color
+	else
+		PGradeColor = "0.596,0.596,0.592,0.67"; -- dark color (broken grades)
+	end;
+	return PGradeColor;
+end;
+
+--
+
+function ColorPlate(plate)
+	local PlateColor = "";
+	if plate == "RG" or plate == "Rough Game" then
+		PlateColor = "#F99816";
+	elseif plate == "FG" or plate == "Fair Game" then
+		PlateColor = "#F99816";
+	elseif plate == "TG" or plate == "Talented Game"then
+		PlateColor = "#FFFFFF";
+	elseif plate ==	"MG" or plate == "Marvelous Game" then
+		PlateColor = "#FFFFFF";
+	elseif plate == "SG" or plate == "Superb Game" then
+		PlateColor = "#FEE108";
+	elseif plate == "EG" or plate == "Extreme Game" then
+		PlateColor = "#FEE108";
+	elseif plate == "UG" or plate == "Ultimate Game" then
+		PlateColor = "#A5FDFD";
+	elseif plate == "PG" or plate == "Perfect Game" then
+		PlateColor = "#A5FDFD";
+	else
+		PlateColor = "#989897";
+	end;
+	return PlateColor;
+end;
+
+
+-----------------------------------------------------------------------
 	
 
 --/////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -211,7 +257,7 @@ local t = Def.ActorFrame {
 		};
 		--personal hs
 		LoadFont("_karnivore lite white")..{
-			InitCommand=cmd(settext,"";horizalign,left;zoom,.62;x,-40;y,-14);
+			InitCommand=cmd(settext,"";horizalign,left;zoom,.62;x,-40;y,-14;maxwidth,85);
 			RefreshTextCommand=function(self)
 				local cur_song = GAMESTATE:GetCurrentSong();
 				local cur_steps = GAMESTATE:GetCurrentSteps(pn);
@@ -261,7 +307,7 @@ local t = Def.ActorFrame {
 		};
 		--machine best hs
 		LoadFont("_karnivore lite white")..{
-			InitCommand=cmd(settext,"";horizalign,left;zoom,.62;x,-40;y,21);
+			InitCommand=cmd(settext,"";horizalign,left;zoom,.62;x,-40;y,21;maxwidth,85);
 			RefreshTextCommand=function(self)
 				local cur_song = GAMESTATE:GetCurrentSong();
 				local cur_steps = GAMESTATE:GetCurrentSteps(pn);
@@ -338,7 +384,7 @@ function GetPHighScoresFrame( pn, appear_on_start )
 
 			--personal hs
 			LoadFont("_karnivore lite white")..{
-				InitCommand=cmd(settext,"";horizalign,left;zoom,.62;x,-40;y,-14);
+				InitCommand=cmd(settext,"";horizalign,left;zoom,.62;x,-40;y,-14;maxwidth,80);
 				RefreshTextCommand=function(self)
 					local cur_song = GAMESTATE:GetCurrentSong();
 					local cur_steps = GAMESTATE:GetCurrentSteps(pn);
@@ -385,16 +431,18 @@ function GetPHighScoresFrame( pn, appear_on_start )
 			};
 
 			--Personal Best P.Grade
-			LoadFont("hdkarnivore 24px")..{
-				InitCommand=cmd(settext,"";horizalign,left;zoom,.32;x,19;y,-12);
+			LoadFont("pbhdkarnivore 24px")..{
+				InitCommand=cmd(settext,"";horizalign,right;zoom,.32;x,43;y,-12);
 				RefreshTextCommand=function(self)
 					local cur_song = GAMESTATE:GetCurrentSong();
 					local cur_steps = GAMESTATE:GetCurrentSteps(pn);
 					if GAMESTATE:HasProfile(pn) then
 						local HSList = PROFILEMAN:GetProfile( pn ):GetHighScoreList(cur_song,cur_steps):GetHighScores();
 						if (#HSList ~= 0) then
-								pgrade = CalcPGrade(PersonalBestPScore);
+								local pgrade = CalcPGrade(PersonalBestPScore);
+								local pgradecolor = ColorPGrade(pgrade);
 								self:settext( pgrade );
+								self:diffuse(color(pgradecolor))
 						else
 							self:settext("");
 						end;
@@ -413,19 +461,21 @@ function GetPHighScoresFrame( pn, appear_on_start )
 
 			--Personal Best Plate
 			LoadFont("_karnivore lite white")..{
-				InitCommand=cmd(settext,"";horizalign,left;zoom,.36;x,19;y,-23);
+				InitCommand=cmd(settext,"";horizalign,right;zoom,.36;x,43;y,-23);
 				RefreshTextCommand=function(self)
 					local cur_song = GAMESTATE:GetCurrentSong();
 					local cur_steps = GAMESTATE:GetCurrentSteps(pn);
 					if GAMESTATE:HasProfile(pn) then
 						local HSList = PROFILEMAN:GetProfile( pn ):GetHighScoreList(cur_song,cur_steps):GetHighScores();
 						if (#HSList ~= 0) then
-							greats = HSList[PersonalBestIndex]:GetTapNoteScore('TapNoteScore_W3');
-							goods = HSList[PersonalBestIndex]:GetTapNoteScore('TapNoteScore_W4');
-							bads = HSList[PersonalBestIndex]:GetTapNoteScore('TapNoteScore_W5');
-							misses = HSList[PersonalBestIndex]:GetTapNoteScore('TapNoteScore_Miss') + HSList[PersonalBestIndex]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
-							plate = CalcPlateInitials(greats,goods,bads,misses);
+							local greats = HSList[PersonalBestIndex]:GetTapNoteScore('TapNoteScore_W3');
+							local goods = HSList[PersonalBestIndex]:GetTapNoteScore('TapNoteScore_W4');
+							local bads = HSList[PersonalBestIndex]:GetTapNoteScore('TapNoteScore_W5');
+							local misses = HSList[PersonalBestIndex]:GetTapNoteScore('TapNoteScore_Miss') + HSList[PersonalBestIndex]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
+							local plate = CalcPlateInitials(greats,goods,bads,misses);
+							local platecolor = ColorPlate(plate);
 							self:settext( plate );
+							self:diffusecolor(color(platecolor));
 						else
 							self:settext("");
 						end;
@@ -491,7 +541,7 @@ function GetPHighScoresFrame( pn, appear_on_start )
 
 			--machine best hs
 			LoadFont("_karnivore lite white")..{
-				InitCommand=cmd(settext,"";horizalign,left;zoom,.62;x,-40;y,21);
+				InitCommand=cmd(settext,"";horizalign,left;zoom,.62;x,-40;y,21;maxwidth,80);
 				RefreshTextCommand=function(self)
 					local cur_song = GAMESTATE:GetCurrentSong();
 					local cur_steps = GAMESTATE:GetCurrentSteps(pn);
@@ -512,8 +562,8 @@ function GetPHighScoresFrame( pn, appear_on_start )
 			};
 
 			--machine best hs p.grade
-			LoadFont("hdkarnivore 24px")..{
-				InitCommand=cmd(settext,"";horizalign,left;zoom,.32;x,19;y,22);
+			LoadFont("pbhdkarnivore 24px")..{
+				InitCommand=cmd(settext,"";horizalign,right;zoom,.32;x,43;y,22);
 				RefreshTextCommand=function(self)
 					local cur_song = GAMESTATE:GetCurrentSong();
 					local cur_steps = GAMESTATE:GetCurrentSteps(pn);
@@ -521,7 +571,9 @@ function GetPHighScoresFrame( pn, appear_on_start )
 					if (#HSList ~= 0) then
 						local pgrade = "";
 						pgrade = CalcPGrade(MachineBestPScore);
+						local pgradecolor = ColorPGrade(pgrade);
 						self:settext( pgrade );
+						self:diffuse(color(pgradecolor));
 					else
 						self:settext("")
 					end;
@@ -537,7 +589,7 @@ function GetPHighScoresFrame( pn, appear_on_start )
 
 			--machine best hs plate
 			LoadFont("_karnivore lite white")..{
-				InitCommand=cmd(settext,"";horizalign,left;zoom,.36;x,19;y,12);
+				InitCommand=cmd(settext,"";horizalign,right;zoom,.36;x,43;y,12);
 				RefreshTextCommand=function(self)
 					local cur_song = GAMESTATE:GetCurrentSong();
 					local cur_steps = GAMESTATE:GetCurrentSteps(pn);
@@ -548,7 +600,9 @@ function GetPHighScoresFrame( pn, appear_on_start )
 						bads = HSList[MachineBestIndex]:GetTapNoteScore('TapNoteScore_W5');
 						misses = HSList[MachineBestIndex]:GetTapNoteScore('TapNoteScore_Miss') + HSList[PersonalBestIndex]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
 						plate = CalcPlateInitials(greats,goods,bads,misses);
+						local platecolor = ColorPlate(plate);
 						self:settext( plate );
+						self:diffuse(color(platecolor));
 					else
 						self:settext("")
 					end;

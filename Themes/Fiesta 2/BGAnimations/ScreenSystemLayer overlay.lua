@@ -63,6 +63,10 @@ local function PlayerName( Player )
 			Name = "heart";
 			InitCommand=cmd(x,26;y,7);
 		};
+		LoadFont("","_myriad pro 20px") .. {
+			Name = "TimePlayed";
+			InitCommand=cmd(horizalign,left;y,7;x,-70);
+		};
 	};
 	return t;
 end;
@@ -94,7 +98,7 @@ t[#t+1] = PlayerName( PLAYER_1 )..{
 		local la = SCREENMAN:GetTopScreen():GetName();
 		if (params.Player == PLAYER_1) then
 			local name = self:GetChild("Name");
-			name:settext("STEPP1");
+			name:settext("GUEST P1");
 			(cmd(stoptweening;y,SCREEN_HEIGHT+20;linear,.2;y,SCREEN_HEIGHT-15))(self);
 		end;
 	end;
@@ -113,7 +117,7 @@ t[#t+1] = PlayerName( PLAYER_1 )..{
 	HideProfileChangesMessageCommand=function(self,params)
 		if params.pn=='PlayerNumber_P1' then
 			local name = self:GetChild("Name");
-			name:settext("STEPP1");
+			name:settext("GUEST P1");
 			self:y(SCREEN_HEIGHT-15);
 		end;
 	end;
@@ -146,7 +150,7 @@ t[#t+1] = PlayerName( PLAYER_2 )..{
 	PlayerStartedSelectProfileMessageCommand=function( self, params )
 		if (params.Player == PLAYER_2) then
 			local name = self:GetChild("Name");
-			name:settext("STEPP1");
+			name:settext("GUEST P2");
 			(cmd(stoptweening;y,SCREEN_HEIGHT+20;linear,.2;y,SCREEN_HEIGHT-15))(self);
 		end;
 	end;
@@ -165,7 +169,7 @@ t[#t+1] = PlayerName( PLAYER_2 )..{
 	HideProfileChangesMessageCommand=function(self,params)
 		if params.pn=='PlayerNumber_P2' then
 			local name = self:GetChild("Name");
-			name:settext("STEPP1");
+			name:settext("GUEST P2");
 			self:y(SCREEN_HEIGHT-15);
 		end;
 	end;

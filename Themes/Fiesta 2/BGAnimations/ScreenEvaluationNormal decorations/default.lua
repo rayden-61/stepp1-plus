@@ -260,7 +260,7 @@ if GAMESTATE:HasProfile( pn ) then
 		end;
 		--personal hs
 		a[#a+1] = DrawRollingNumberSmall(-40,-14,OldHS,NewHS,left,.6)..{
-			InitCommand=cmd(zoom,.62;diffusealpha,0;sleep,.5;diffusealpha,1);
+			InitCommand=cmd(zoom,.62;maxwidth,85;diffusealpha,0;sleep,.5;diffusealpha,1);
 			OnCommand=function(self)
 				if not SCREENMAN:GetTopScreen():PlayerHasNewRecord(pn) then
 					self:visible(false);
@@ -269,7 +269,7 @@ if GAMESTATE:HasProfile( pn ) then
 			OffCommand=cmd(stoptweening;visible,false);
 		};
 		a[#a+1] = DrawRollingNumberSmall(-40,-14,NewHS,NewHS,left,.6)..{
-			InitCommand=cmd(zoom,.62;diffusealpha,0;sleep,.5;diffusealpha,1);
+			InitCommand=cmd(zoom,.62;maxwidth,85;diffusealpha,0;sleep,.5;diffusealpha,1);
 			OnCommand=function(self)
 				if SCREENMAN:GetTopScreen():PlayerHasNewRecord(pn) then
 					self:visible(false);
@@ -302,7 +302,7 @@ if HSListMachine ~= nil and #HSListMachine ~= 0 then
 		OldHS = 0;
 	end;
 	a[#a+1] = DrawRollingNumberSmall(-40,21,OldHS,NewHS,left,.6)..{
-		InitCommand=cmd(zoom,.62;diffusealpha,0;sleep,.5;diffusealpha,1);
+		InitCommand=cmd(zoom,.62;maxwidth,85;diffusealpha,0;sleep,.5;diffusealpha,1);
 		OnCommand=function(self)
 			if not SCREENMAN:GetTopScreen():PlayerHasNewMachineRecord(pn) then
 				self:visible(false);
@@ -311,7 +311,7 @@ if HSListMachine ~= nil and #HSListMachine ~= 0 then
 		OffCommand=cmd(stoptweening;visible,false);
 	};
 	a[#a+1] = DrawRollingNumberSmall(-40,21,NewHS,NewHS,left,.6)..{
-		InitCommand=cmd(zoom,.62;diffusealpha,0;sleep,.5;diffusealpha,1);
+		InitCommand=cmd(zoom,.62;maxwidth,85;diffusealpha,0;sleep,.5;diffusealpha,1);
 		OnCommand=function(self)
 			if SCREENMAN:GetTopScreen():PlayerHasNewMachineRecord(pn) then
 				self:visible(false);
@@ -324,7 +324,7 @@ if HSListMachine ~= nil and #HSListMachine ~= 0 then
 end;
 
 a[#a+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/highscores_glow") )..{
-	InitCommand=cmd(y,-38;basezoom,.66;diffuse,0,1,1,1;blend,'BlendMode_Add');
+	InitCommand=cmd(basezoom,.66;diffuse,0,1,1,1;blend,'BlendMode_Add');
 	OnCommand=cmd(stoptweening;horizalign,center;diffusealpha,0;zoomx,0;x,0;sleep,.2;linear,.1;zoomx,1;diffusealpha,.8;linear,.1;zoomx,0;diffusealpha,0;queuecommand,'Loop');
 	LoopCommand=cmd(stoptweening;zoomx,1;diffusealpha,0;linear,1;diffusealpha,.1;linear,1;diffusealpha,0;queuecommand,'Loop');
 	OffCommand=cmd(stoptweening;zoomx,0;x,0);
@@ -356,72 +356,73 @@ function GetPHighScoresFrameEval( pn )
 	local MachineBestIndex = 1;
 	local MachineBestPScore = 0;
 	local MachineBestName = "";
+	local prev_PersonalBestIndex = 1; 
+	local prev_PersonalBestPScore = 0;
+	local prev_MachineBestIndex = 1;
+	local prev_MachineBestPScore = 0;
+	local prev_MachineBestName = "";
 	local cur_song = GAMESTATE:GetCurrentSong();
 	local cur_steps = GAMESTATE:GetCurrentSteps( pn );
 			
 	if GAMESTATE:HasProfile( pn ) then
-		local HighScoreList = PROFILEMAN:GetProfile( pn ):GetHighScoreList(cur_song,cur_steps):GetHighScores();
-		if HighScoreList ~= nil and #HighScoreList ~= 0 then
+		local HSList = PROFILEMAN:GetProfile( pn ):GetHighScoreList(cur_song,cur_steps):GetHighScores();
+		if HSList ~= nil and #HSList ~= 0 then
 			local perfects = 0;
 			local greats = 0;
 			local goods = 0;
 			local bads = 0;
 			local misses = 0;
 			local maxcombo = 0;
-			local notestotal = 0;
-			local weightednotes = 0;
 			local pscore = 0;
-			for i = 1,#HighScoreList do
-				perfects = HighScoreList[i]:GetTapNoteScore('TapNoteScore_W2') + HighScoreList[i]:GetTapNoteScore('TapNoteScore_CheckpointHit');
-				greats = HighScoreList[i]:GetTapNoteScore('TapNoteScore_W3');
-				goods = HighScoreList[i]:GetTapNoteScore('TapNoteScore_W4');
-				bads = HighScoreList[i]:GetTapNoteScore('TapNoteScore_W5');
-				misses = HighScoreList[i]:GetTapNoteScore('TapNoteScore_Miss') + HighScoreList[i]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
-				maxcombo = HighScoreList[i]:GetMaxCombo();
-				notestotal = perfects + greats + goods + bads + misses;
-				if notestotal <= 1 then notestotal = 1 end;
-				weightednotes = perfects + 0.6*greats + 0.2*goods + 0.1*bads;
-				pscore = math.floor(((weightednotes * 0.995 + maxcombo * 0.005) / notestotal) * 1000000 );
-				if pscore < 0 then
-					pscore = 0;
-				elseif pscore > 1000000 then
-					pscore = 1000000;
-				end;
+			for i = 1,#HSList do
+				perfects = HSList[i]:GetTapNoteScore('TapNoteScore_W2') + HSList[i]:GetTapNoteScore('TapNoteScore_CheckpointHit');
+				greats = HSList[i]:GetTapNoteScore('TapNoteScore_W3');
+				goods = HSList[i]:GetTapNoteScore('TapNoteScore_W4');
+				bads = HSList[i]:GetTapNoteScore('TapNoteScore_W5');
+				misses = HSList[i]:GetTapNoteScore('TapNoteScore_Miss') + HSList[i]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
+				maxcombo = HSList[i]:GetMaxCombo();
+				pscore = CalcPScore(perfects,greats,goods,bads,misses,maxcombo);
 				if pscore >= PersonalBestPScore then
+					prev_PersonalBestIndex = PersonalBestIndex; 
+					prev_PersonalBestPScore = PersonalBestPScore;
 					PersonalBestIndex = i;
 					PersonalBestPScore = pscore;
 				end;
 			end;
-			local NewHS = PersonalBestPScore;
 			--personal hs
-			a[#a+1] = DrawRollingNumberSmall(-40,-14,NewHS,NewHS,left,.6)..{
-				InitCommand=cmd(zoom,.62;diffusealpha,0;sleep,.5;diffusealpha,1);
+			a[#a+1] = DrawRollingNumberSmall(-40,-14,prev_PersonalBestPScore,PersonalBestPScore,left,.6)..{
+				InitCommand=cmd(zoom,.62;maxwidth,85;diffusealpha,0;sleep,.5;diffusealpha,1);
 				OffCommand=cmd(stoptweening;visible,false);
 			};
 			--personal best p.grade
 			local PersonalBestPGrade = "";
-			PersonalBestPGrade = (
-					(PersonalBestPScore >= 995000 and "SSS+")	or 
-					(PersonalBestPScore >= 990000 and "SSS")	or 
-					(PersonalBestPScore >= 985000 and "SS+")	or
-					(PersonalBestPScore >= 980000 and "SS")		or
-					(PersonalBestPScore >= 975000 and "S+")		or
-					(PersonalBestPScore >= 970000 and "S")		or 
-					(PersonalBestPScore >= 960000 and "AAA+")	or 
-					(PersonalBestPScore >= 950000 and "AAA")	or
-					(PersonalBestPScore >= 925000 and "AA+")	or
-					(PersonalBestPScore >= 900000 and "AA")		or
-					(PersonalBestPScore >= 825000 and "A+")		or
-					(PersonalBestPScore >= 750000 and "A")		or
-					(PersonalBestPScore >= 650000 and "B")		or
-					(PersonalBestPScore >= 550000 and "C")		or
-					(PersonalBestPScore >= 450000 and "D") 		or
-					"F"
-				);
-			a[#a+1] = LoadFont("","hdkarnivore 24px") .. {
-				InitCommand=cmd(settext,"";horizalign,left;zoom,.34;x,19;y,-14);
+			PersonalBestPGrade = CalcPGrade(PersonalBestPScore);
+			local pgradecolor = ColorPGrade(PersonalBestPGrade);
+
+			a[#a+1] = LoadFont("","pbhdkarnivore 24px") .. {
+				InitCommand=cmd(settext,"";horizalign,right;zoom,.32;x,43;y,-12);
 				RefreshTextCommand=function(self)
 					self:settext( string.upper( PersonalBestPGrade ));
+					self:diffuse(color(pgradecolor));
+				end;
+				OnCommand=cmd(stoptweening;settext,"";sleep,.5;queuecommand,'RefreshText');
+				OffCommand=cmd(stoptweening;visible,false);
+			};
+
+			--personal best plate
+			local PersonalBestPlate = "";
+			local greats = HSList[PersonalBestIndex]:GetTapNoteScore('TapNoteScore_W3');
+			local goods = HSList[PersonalBestIndex]:GetTapNoteScore('TapNoteScore_W4');
+			local bads = HSList[PersonalBestIndex]:GetTapNoteScore('TapNoteScore_W5');
+			local misses = HSList[PersonalBestIndex]:GetTapNoteScore('TapNoteScore_Miss') + HSList[PersonalBestIndex]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
+			PersonalBestPlate = CalcPlateInitials(greats,goods,bads,misses);
+			local platecolor = 	ColorPlate(PersonalBestPlate);
+
+			a[#a+1] = LoadFont("","_karnivore lite white") .. {
+				InitCommand=cmd(settext,"";horizalign,right;zoom,.36;x,43;y,-23);
+				RefreshTextCommand=function(self)
+					self:settext( string.upper( PersonalBestPlate ));
+					self:diffuse(color(platecolor));
 				end;
 				OnCommand=cmd(stoptweening;settext,"";sleep,.5;queuecommand,'RefreshText');
 				OffCommand=cmd(stoptweening;visible,false);
@@ -437,8 +438,6 @@ function GetPHighScoresFrameEval( pn )
 		local bads =  0;
 		local misses = 0;		
 		local maxcombo =  0;
-		local notestotal = 0;
-		local weightednotes = 0;
 		local pscore = 0;
 		for i = 1,#HSListMachine do
 			perfects =  HSListMachine[i]:GetTapNoteScore('TapNoteScore_W2') +  HSListMachine[i]:GetTapNoteScore('TapNoteScore_CheckpointHit');
@@ -447,11 +446,10 @@ function GetPHighScoresFrameEval( pn )
 			bads =  HSListMachine[i]:GetTapNoteScore('TapNoteScore_W5');
 			misses =  HSListMachine[i]:GetTapNoteScore('TapNoteScore_Miss') +  HSListMachine[i]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
 			maxcombo =  HSListMachine[i]:GetMaxCombo();
-			notestotal = perfects + greats + goods + bads + misses;
-			if notestotal <= 1 then notestotal = 1 end;
-			weightednotes = perfects + 0.6*greats + 0.2*goods + 0.1*bads;
-			pscore = math.floor(((weightednotes * 0.995 + maxcombo * 0.005) / notestotal) * 1000000 );
+			pscore = CalcPScore(perfects,greats,goods,bads,misses,maxcombo);
 			if pscore >= MachineBestPScore then
+				prev_MachineBestIndex = MachineBestIndex;
+				prev_MachineBestPScore = MachineBestPScore;
 				MachineBestIndex = i;
 				MachineBestPScore = pscore;
 				MachineBestName =  HSListMachine[i]:GetName();
@@ -468,35 +466,38 @@ function GetPHighScoresFrameEval( pn )
 		};
 	
 		--machine best hs
-		a[#a+1] = DrawRollingNumberSmall(-40,21,MachineBestPScore,MachineBestPScore,left,.6)..{
-			InitCommand=cmd(zoom,.62;diffusealpha,0;sleep,.5;diffusealpha,1);
+		a[#a+1] = DrawRollingNumberSmall(-40,21,prev_MachineBestPScore,MachineBestPScore,left,.6)..{
+			InitCommand=cmd(zoom,.62;maxwidth,85;diffusealpha,0;sleep,.5;diffusealpha,1);
 			OffCommand=cmd(stoptweening;visible,false);
 		};
 
 		--machine best p.grade
 		local MachineBestPGrade = "";
-		MachineBestPGrade = (
-				(MachineBestPScore >= 995000 and "SSS+")	or 
-				(MachineBestPScore >= 990000 and "SSS")		or 
-				(MachineBestPScore >= 985000 and "SS+")		or
-				(MachineBestPScore >= 980000 and "SS")		or
-				(MachineBestPScore >= 975000 and "S+")		or
-				(MachineBestPScore >= 970000 and "S")		or 
-				(MachineBestPScore >= 960000 and "AAA+")	or 
-				(MachineBestPScore >= 950000 and "AAA")		or
-				(MachineBestPScore >= 925000 and "AA+")		or
-				(MachineBestPScore >= 900000 and "AA")		or
-				(MachineBestPScore >= 825000 and "A+")		or
-				(MachineBestPScore >= 750000 and "A")		or
-				(MachineBestPScore >= 650000 and "B")		or
-				(MachineBestPScore >= 550000 and "C")		or
-				(MachineBestPScore >= 450000 and "D") 		or
-				"F"
-			);
-		a[#a+1] = LoadFont("","hdkarnivore 24px") .. {
-			InitCommand=cmd(settext,"";horizalign,left;zoom,.34;x,19;y,21);
+		MachineBestPGrade = CalcPGrade(MachineBestPScore);
+		local pgradecolor = ColorPGrade(MachineBestPGrade);
+		a[#a+1] = LoadFont("","pbhdkarnivore 24px") .. {
+			InitCommand=cmd(settext,"";horizalign,right;zoom,.32;x,43;y,22);
 			RefreshTextCommand=function(self)
 				self:settext( string.upper( MachineBestPGrade ));
+				self:diffuse(color(pgradecolor));
+			end;
+			OnCommand=cmd(stoptweening;settext,"";sleep,.5;queuecommand,'RefreshText');
+			OffCommand=cmd(stoptweening;visible,false);
+		};
+
+		--machine best plate
+		local MachineBestPlate = "";
+		local greats = HSListMachine[MachineBestIndex]:GetTapNoteScore('TapNoteScore_W3');
+		local goods = HSListMachine[MachineBestIndex]:GetTapNoteScore('TapNoteScore_W4');
+		local bads = HSListMachine[MachineBestIndex]:GetTapNoteScore('TapNoteScore_W5');
+		local misses = HSListMachine[MachineBestIndex]:GetTapNoteScore('TapNoteScore_Miss') + HSListMachine[MachineBestIndex]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
+		MachineBestPlate = CalcPlateInitials(greats,goods,bads,misses);
+		local platecolor = ColorPlate(MachineBestPlate);
+		a[#a+1] = LoadFont("","_karnivore lite white") .. {
+			InitCommand=cmd(settext,"";horizalign,right;zoom,.36;x,43;y,12);
+			RefreshTextCommand=function(self)
+				self:settext( string.upper( MachineBestPlate ));
+				self:diffuse(color(platecolor));
 			end;
 			OnCommand=cmd(stoptweening;settext,"";sleep,.5;queuecommand,'RefreshText');
 			OffCommand=cmd(stoptweening;visible,false);
@@ -506,7 +507,7 @@ function GetPHighScoresFrameEval( pn )
 	end;
 	
 	a[#a+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/highscores_glow") )..{
-		InitCommand=cmd(y,-38;basezoom,.66;diffuse,0,1,1,1;blend,'BlendMode_Add');
+		InitCommand=cmd(basezoom,.66;diffuse,0,1,1,1;blend,'BlendMode_Add');
 		OnCommand=cmd(stoptweening;horizalign,center;diffusealpha,0;zoomx,0;x,0;sleep,.2;linear,.1;zoomx,1;diffusealpha,.8;linear,.1;zoomx,0;diffusealpha,0;queuecommand,'Loop');
 		LoopCommand=cmd(stoptweening;zoomx,1;diffusealpha,0;linear,1;diffusealpha,.1;linear,1;diffusealpha,0;queuecommand,'Loop');
 		OffCommand=cmd(stoptweening;zoomx,0;x,0);

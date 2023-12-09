@@ -380,7 +380,6 @@ t[#t+1] = Def.ActorFrame {
 	OffCommand=cmd(stoptweening;visible,false);
 	CurrentSongChangedMessageCommand=function(self)
 		local cur_song = GAMESTATE:GetCurrentSong();
-		
 		if not cur_song then
 			self:visible(false);
 			return;
@@ -415,12 +414,44 @@ t[#t+1] = Def.ActorFrame {
 		artist:settext( cur_song:GetDisplayArtist() );
 		
 		local group = SCREENMAN:GetTopScreen():GetCurrentGroup();
+		local formattedtime = "";
+--[[	local HSListMachine = PROFILEMAN:GetMachineProfile():GetHighScoreList(cur_song):GetHighScores();
+		if HSListMachine ~= nil and HSListMachine > 0 then
+			local survivalseconds = HSListMachine[1]:GetSurvivalTime();
+			local minutes = 0;
+			local seconds = 0;
+			if survivalseconds < 60 then
+				minutes = 0;
+				seconds = survivalseconds;
+				if(seconds < 10) then
+					formattedtime="00:0"..math.floor(seconds);
+				else
+					formattedtime="00:"..math.floor(seconds);
+				end;
+			else
+				minutes = math.floor(math.floor(survivalseconds) / 60);
+				seconds = math.floor(survivalseconds) - (minutes*60);
+				local formattedminutes="";
+				local formattedseconds="";
+				if minutes < 10 then
+					formattedminutes="0"..minutes;
+				else
+					formattedminutes=minutes;
+				end;
+				if seconds < 10 then
+					formattedseconds = "0"..seconds;
+				else
+					formattedseconds = seconds;
+				end;
+				formattedtime = formattedminutes..":"..formattedseconds;
+			end;
+		end;--]]
 		if( group == "SO_RANDOM" ) then
 			title:settext( "???" );
-			--duration:settext( "??:??" );
+			duration:settext( "??:??" );
 		else
 			title:settext( cur_song:GetDisplayMainTitle() );
-			--duration:settext( "00:00" );
+			duration:settext( formattedtime );
 		end;
 	end;
 	children = {
