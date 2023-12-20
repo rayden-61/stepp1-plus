@@ -1,4 +1,4 @@
-StepP1+ 1.0 Release - ??? 2023:
+StepP1 Plus v0.9.5 BETA-1 Release - ??? 2023:
 - More small UI changes by SofiaXY to closer match the original game
 - Added P.Score to the Evaluation Screen, based on the most recent scoring paradigm/formula: P.Score goes from 0 to 1.000.000 for all songs, where 1.000.000 = 100% Perfects (SSS). Max Combo accounts for 5000 out of the 1.000.000 points. Each Great is worth 6/10 of a Perfect, each Good is worth 2/10 of a Perfect, each Bad is worth 1/10 of a Perfect and Miss is worth nothing.
 - Added a P.Score Grade, displayed alongside the P.Score. Possible P.Grades are F, D, C, B, A, A+, AA, AA+, AAA, AAA+, S, S+, SS, SS+, SSS, SSS+, depending on how close the P.Score is to 1.000.00.
