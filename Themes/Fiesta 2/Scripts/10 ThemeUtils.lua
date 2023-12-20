@@ -190,13 +190,13 @@ function ColorPGrade(pgrade)
 	if pgrade == "AAA" or pgrade == "AAA+" then
 		PGradeColor =  "#FFFFFF"; -- silver color (actually white)
 	elseif string.find(pgrade, "A") then
-		PGradeColor = "0.803,0.498,0.196,1"; -- bronze color
+		PGradeColor = "0.847,0.552,0.254,1"; -- bronze color
 	elseif pgrade == "SSS" or pgrade == "SSS+" then
 		PGradeColor = "#A5FDFD"; -- platinum color
 	elseif string.find(pgrade, "S") then
 		PGradeColor = "#FEE108"; -- gold color
 	else
-		PGradeColor = "0.596,0.596,0.592,1"; -- dark color (broken grades)
+		PGradeColor = "0.696,0.696,0.692,1"; -- dark color (broken grades)
 	end;
 	return PGradeColor;
 end;
@@ -206,9 +206,9 @@ end;
 function ColorPlate(plate)
 	local PlateColor = "";
 	if plate == "RG" or plate == "Rough Game" then
-		PlateColor = "0.803,0.498,0.196,1";
+		PlateColor = "0.847,0.552,0.254,1";
 	elseif plate == "FG" or plate == "Fair Game" then
-		PlateColor = "0.803,0.498,0.196,1";
+		PlateColor = "0.847,0.552,0.254,1";
 	elseif plate == "TG" or plate == "Talented Game"then
 		PlateColor = "#FFFFFF";
 	elseif plate ==	"MG" or plate == "Marvelous Game" then
@@ -222,7 +222,7 @@ function ColorPlate(plate)
 	elseif plate == "PG" or plate == "Perfect Game" then
 		PlateColor = "#A5FDFD";
 	else
-		PlateColor = "#989897";
+		PlateColor = "#FFFFFF";
 	end;
 	return PlateColor;
 end;
@@ -1017,3 +1017,34 @@ function GetSimpleBallLevel( pn )
 end;
 
 --/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+function FormatTimeLong(totalseconds)
+	local hours = math.floor( math.mod(totalseconds, 86400) / 3600 )
+	local minutes = math.floor( math.mod(totalseconds, 3600) / 60 )
+	local seconds = math.floor( math.mod(totalseconds, 60) )
+	if (hours < 10) then
+		hours = "0"..hours
+	end
+	if (minutes < 10) then
+		minutes = "0"..minutes
+	end
+	if (seconds < 10) then
+		seconds = "0"..seconds
+	end
+	return hours..":"..minutes..":"..seconds
+end
+
+--
+
+function FormatTime(totalseconds)
+	local minutes = math.floor( totalseconds / 60 )
+	local seconds = math.floor( math.mod(totalseconds, 60) )
+	if (minutes < 10) then
+		minutes = "0"..minutes
+	end
+	if (seconds < 10) then
+		seconds = "0"..seconds
+	end
+	return minutes..":"..seconds
+end

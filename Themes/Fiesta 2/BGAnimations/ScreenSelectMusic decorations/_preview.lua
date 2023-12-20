@@ -390,7 +390,6 @@ t[#t+1] = Def.ActorFrame {
 		local bpm1;
 		local bpm2;
 		local bpm_size;
-		local duration = self:GetChild("duration");
 		local bpm_number = self:GetChild("bpm_number");
 		local bpm_text = self:GetChild("bpm_text");
 		local artist = self:GetChild("artist");
@@ -414,43 +413,47 @@ t[#t+1] = Def.ActorFrame {
 		artist:settext( cur_song:GetDisplayArtist() );
 		
 		local group = SCREENMAN:GetTopScreen():GetCurrentGroup();
-		local formattedtime = "";
---[[	local HSListMachine = PROFILEMAN:GetMachineProfile():GetHighScoreList(cur_song):GetHighScores();
-		if HSListMachine ~= nil and HSListMachine > 0 then
-			local survivalseconds = HSListMachine[1]:GetSurvivalTime();
-			local minutes = 0;
-			local seconds = 0;
-			if survivalseconds < 60 then
-				minutes = 0;
-				seconds = survivalseconds;
-				if(seconds < 10) then
-					formattedtime="00:0"..math.floor(seconds);
-				else
-					formattedtime="00:"..math.floor(seconds);
-				end;
-			else
-				minutes = math.floor(math.floor(survivalseconds) / 60);
-				seconds = math.floor(survivalseconds) - (minutes*60);
-				local formattedminutes="";
-				local formattedseconds="";
-				if minutes < 10 then
-					formattedminutes="0"..minutes;
-				else
-					formattedminutes=minutes;
-				end;
-				if seconds < 10 then
-					formattedseconds = "0"..seconds;
-				else
-					formattedseconds = seconds;
-				end;
-				formattedtime = formattedminutes..":"..formattedseconds;
-			end;
-		end;--]]
+
 		if( group == "SO_RANDOM" ) then
 			title:settext( "???" );
-			duration:settext( "??:??" );
 		else
 			title:settext( cur_song:GetDisplayMainTitle() );
+		end;
+	end;
+	PlayableStepsChangedMessageCommand=function(self)
+		local cur_song = GAMESTATE:GetCurrentSong();
+		if not cur_song then
+			self:visible(false);
+			return;
+		end;
+		
+		self:visible(true);
+		local duration = self:GetChild("duration");
+		local currentsurvivalseconds = 0;
+		local highestsurvivalseconds = 0;
+		local formattedtime = "";
+		local aSteps = SCREENMAN:GetTopScreen():GetPlayableSteps();
+		local numSteps = #aSteps;
+		for i=1,numSteps do
+			local HighScoresList = PROFILEMAN:GetMachineProfile():GetHighScoreListIfExists(cur_song,aSteps[i]);
+			if HighScoresList ~= nil then
+				local HighScores = HighScoresList:GetHighScores();
+				if HighScores ~= nil then
+					local BestScore = HighScores[1];
+					if BestScore ~= nil then
+						currentsurvivalseconds = BestScore:GetSurvivalSeconds();
+						if currentsurvivalseconds ~= nil and currentsurvivalseconds > highestsurvivalseconds then
+							highestsurvivalseconds = currentsurvivalseconds;
+						end;
+					end;
+				end;
+			end;
+		end;
+		if highestsurvivalseconds > 0 then formattedtime = FormatTime(highestsurvivalseconds) end;
+		local group = SCREENMAN:GetTopScreen():GetCurrentGroup();
+		if( group == "SO_RANDOM" ) then
+			duration:settext( "??:??" );
+		else
 			duration:settext( formattedtime );
 		end;
 	end;
@@ -472,12 +475,12 @@ t[#t+1] = Def.ActorFrame {
 		--artist
 		LoadFont("_myriad pro 20px")..{
 			Name="artist";
-			InitCommand=cmd(stoptweening;horizalign,left;y,79;x,-148;zoom,.6;shadowlength,0;diffuse,0,1,1,1);
+			InitCommand=cmd(stoptweening;horizalign,left;y,79;x,-148;zoom,.6;shadowlength,0;diffuse,0,1,1,1;maxwidth,403);
 		};
 		--song title
 		LoadFont("_myriad pro 20px")..{
 			Name="title";
-			InitCommand=cmd(stoptweening;horizalign,left;y,65;x,-148;zoom,.6;shadowlength,0;maxwidth,493);
+			InitCommand=cmd(stoptweening;horizalign,left;y,65;x,-148;zoom,.6;shadowlength,0;maxwidth,423);
 		};
 	};
 }

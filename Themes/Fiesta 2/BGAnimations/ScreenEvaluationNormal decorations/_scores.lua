@@ -55,7 +55,7 @@ if GAMESTATE:IsSideJoined(PLAYER_1) then
 	t[#t+1] = DrawRollingNumberP2( WideScale(66, 115), init_pos+delta*6, pscore, 'HorizAlign_Left', 2.48 )..{InitCommand=cmd(zoom,.84);};
 	t[#t+1] = DrawRollingNumberP1( WideScale(66, 115), init_pos+delta*7, curstats:GetScore(), 'HorizAlign_Left', 2.56 )..{InitCommand=cmd(zoom,.84);};
 	--kcal
-	local kcal = STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_1):GetCaloriesBurned();
+	local kcal = STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_1):GetCaloriesBurned()*0.50;
 	t[#t+1] = DrawRollingNumberP1( WideScale(106, 155), init_pos+delta*8, math.floor( (kcal - math.floor(kcal))*1000 ), 'HorizAlign_Left', 2.64 )..{InitCommand=cmd(zoom,.84);};
 	t[#t+1] = DrawRollingNumberP1( WideScale(66, 115), init_pos+delta*8, math.floor( kcal ), 'HorizAlign_Left', 2.64 )..{InitCommand=cmd(zoom,.84);};
 	t[#t+1] = LoadFont("_karnivore lite white 20px")..{ InitCommand=cmd(settext,".";y,init_pos+delta*8;x,WideScale(101, 150);zoom,.84;diffusealpha,0;sleep,2.64;diffusealpha,1); };
@@ -91,7 +91,7 @@ if GAMESTATE:IsSideJoined(PLAYER_2) then
 	t[#t+1] = DrawRollingNumberP2( SCREEN_RIGHT-WideScale(66, 115), init_pos+delta*6, pscore, 'HorizAlign_Right', 2.48 )..{InitCommand=cmd(zoom,.84);};
 	t[#t+1] = DrawRollingNumberP1( SCREEN_RIGHT-WideScale(66, 115), init_pos+delta*7, curstats:GetScore(), 'HorizAlign_Right', 2.56 )..{InitCommand=cmd(zoom,.84);};
 	--kcal
-	local kcal = STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_2):GetCaloriesBurned();
+	local kcal = STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_2):GetCaloriesBurned()*0.50;
 	t[#t+1] = DrawRollingNumberP1( SCREEN_RIGHT-WideScale(66, 115), init_pos+delta*8, math.floor( (kcal - math.floor(kcal))*1000 ), 'HorizAlign_Right', 2.64 )..{InitCommand=cmd(zoom,.84);};
 	t[#t+1] = DrawRollingNumberP1( SCREEN_RIGHT-WideScale(106, 155), init_pos+delta*8, math.floor( kcal ), 'HorizAlign_Right', 2.64 )..{InitCommand=cmd(zoom,.84);};
 	t[#t+1] = LoadFont("_karnivore lite white 20px")..{ InitCommand=cmd(settext,".";y,init_pos+delta*8;x,SCREEN_RIGHT-WideScale(101, 150);zoom,.84;diffusealpha,0;sleep,2.64;diffusealpha,1); };

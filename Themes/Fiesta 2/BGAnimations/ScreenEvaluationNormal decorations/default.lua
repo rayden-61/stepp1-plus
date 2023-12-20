@@ -134,14 +134,14 @@ t[#t+1] = LoadActor( THEME:GetPathG("","ScreenEvaluation/STAR") )..{
 end;
 
 -- Machine name
-t[#t+1] = LoadFont("_myriad pro 20px")..{
-	OnCommand=cmd(y,66;x,SCREEN_CENTER_X;zoom,.66;shadowlength,0;maxwidth,440;diffuse,0,1,1,1;settext,MachineText);
+t[#t+1] = LoadFont("_myriad proB 20px")..{
+	OnCommand=cmd(y,-66;sleep,1;linear,0;y,66;x,SCREEN_CENTER_X;zoom,.6;shadowlength,0;diffuse,0,1,1,1;settext,MachineText);
 	OffCommand=cmd(stoptweening;visible,false);
 }
 
 -- Song title
 t[#t+1] = LoadFont("_myriad pro 20px")..{
-	OnCommand=cmd(y,86;x,SCREEN_CENTER_X;zoom,.66;shadowlength,0;maxwidth,440;diffuse,0,1,1,1;settext,GAMESTATE:GetCurrentSong():GetDisplayMainTitle());
+	OnCommand=cmd(y,-66;sleep,1;linear,0;y,86;x,SCREEN_CENTER_X;zoom,.6;shadowlength,0;diffuse,0,1,1,1;settext,GAMESTATE:GetCurrentSong():GetDisplayMainTitle());
 	OffCommand=cmd(stoptweening;visible,false);
 }
 
