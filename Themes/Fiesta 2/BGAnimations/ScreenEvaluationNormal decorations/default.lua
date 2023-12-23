@@ -363,6 +363,16 @@ function GetPHighScoresFrameEval( pn )
 	local prev_MachineBestName = "";
 	local cur_song = GAMESTATE:GetCurrentSong();
 	local cur_steps = GAMESTATE:GetCurrentSteps( pn );
+	local curstats = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn); 
+	local curperfects = curstats:GetTapNoteScores('TapNoteScore_W2') + curstats:GetTapNoteScores('TapNoteScore_CheckpointHit');
+	local curgreats = curstats:GetTapNoteScores('TapNoteScore_W3');
+	local curgoods = curstats:GetTapNoteScores('TapNoteScore_W4');
+	local curbads = curstats:GetTapNoteScores('TapNoteScore_W5');
+	local curmisses = curstats:GetTapNoteScores('TapNoteScore_Miss') + curstats:GetTapNoteScores('TapNoteScore_CheckpointMiss');
+	local curmaxcombo = curstats:MaxCombo();
+	local curpscore = CalcPScore(curperfects,curgreats,curgoods,curbads,curmisses,curmaxcombo);
+	local PlayerHasNewPScoreRecord = false;
+	local PlayerHasNewPScoreMachineRecord = false;
 			
 	if GAMESTATE:HasProfile( pn ) then
 		local HSList = PROFILEMAN:GetProfile( pn ):GetHighScoreList(cur_song,cur_steps):GetHighScores();
@@ -387,8 +397,13 @@ function GetPHighScoresFrameEval( pn )
 					prev_PersonalBestPScore = PersonalBestPScore;
 					PersonalBestIndex = i;
 					PersonalBestPScore = pscore;
+				elseif pscore >= prev_PersonalBestPScore then
+					prev_PersonalBestPScore = pscore;
+					prev_PersonalBestIndex = i;
 				end;
 			end;
+			if curpscore == PersonalBestPScore and PersonalBestPScore ~= prev_PersonalBestPScore then PlayerHasNewPScoreRecord = true end;
+			if PlayerHasNewPScoreRecord ~= true then prev_PersonalBestPScore = PersonalBestPScore end;
 			--personal hs
 			a[#a+1] = DrawRollingNumberSmall(-40,-14,prev_PersonalBestPScore,PersonalBestPScore,left,.6)..{
 				InitCommand=cmd(zoom,.62;maxwidth,85;diffusealpha,0;sleep,.5;diffusealpha,1);
@@ -427,6 +442,19 @@ function GetPHighScoresFrameEval( pn )
 				OnCommand=cmd(stoptweening;settext,"";sleep,.5;queuecommand,'RefreshText');
 				OffCommand=cmd(stoptweening;visible,false);
 			};
+	
+			a[#a+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/hs_glow_player.png") )..{
+				InitCommand=cmd(basezoom,.66);
+				OnCommand=function(self)
+					self:visible(false);
+					if PlayerHasNewPScoreRecord == true then
+						self:sleep(.2);
+						self:queuecommand("Effect");
+					end;
+				end;
+				EffectCommand=cmd(y,-17;glowshift;effectcolor1,1,1,0,1;effectcolor2,1,1,1,1;effectperiod,1;visible,true);
+				OffCommand=cmd(finishtweening;visible,false);
+			};			
 			end;
 	end;
 	
@@ -453,6 +481,9 @@ function GetPHighScoresFrameEval( pn )
 				MachineBestIndex = i;
 				MachineBestPScore = pscore;
 				MachineBestName =  HSListMachine[i]:GetName();
+			elseif pscore >= prev_MachineBestPScore then
+				prev_MachineBestPScore = pscore;
+				prev_MachineBestIndex = i;
 			end;
 		end;
 		--machine best name
@@ -465,6 +496,8 @@ function GetPHighScoresFrameEval( pn )
 			OffCommand=cmd(stoptweening;visible,false);
 		};
 	
+		if curpscore == MachineBestPScore and MachineBestPScore ~= prev_MachineBestPScore then PlayerHasNewPScoreMachineRecord = true end;
+		if PlayerHasNewPScoreMachineRecord ~= true then prev_MachineBestPScore = MachineBestPScore end;
 		--machine best hs
 		a[#a+1] = DrawRollingNumberSmall(-40,21,prev_MachineBestPScore,MachineBestPScore,left,.6)..{
 			InitCommand=cmd(zoom,.62;maxwidth,85;diffusealpha,0;sleep,.5;diffusealpha,1);
@@ -487,11 +520,11 @@ function GetPHighScoresFrameEval( pn )
 
 		--machine best plate
 		local MachineBestPlate = "";
-		local greats = HSListMachine[MachineBestIndex]:GetTapNoteScore('TapNoteScore_W3');
-		local goods = HSListMachine[MachineBestIndex]:GetTapNoteScore('TapNoteScore_W4');
-		local bads = HSListMachine[MachineBestIndex]:GetTapNoteScore('TapNoteScore_W5');
-		local misses = HSListMachine[MachineBestIndex]:GetTapNoteScore('TapNoteScore_Miss') + HSListMachine[MachineBestIndex]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
-		MachineBestPlate = CalcPlateInitials(greats,goods,bads,misses);
+		local MBgreats = HSListMachine[MachineBestIndex]:GetTapNoteScore('TapNoteScore_W3');
+		local MBgoods = HSListMachine[MachineBestIndex]:GetTapNoteScore('TapNoteScore_W4');
+		local MBbads = HSListMachine[MachineBestIndex]:GetTapNoteScore('TapNoteScore_W5');
+		local MBmisses = HSListMachine[MachineBestIndex]:GetTapNoteScore('TapNoteScore_Miss') + HSListMachine[MachineBestIndex]:GetTapNoteScore('TapNoteScore_CheckpointMiss');		
+		MachineBestPlate = CalcPlateInitials(MBgreats,MBgoods,MBbads,MBmisses);
 		local platecolor = ColorPlate(MachineBestPlate);
 		a[#a+1] = LoadFont("","_karnivore lite white") .. {
 			InitCommand=cmd(settext,"";horizalign,right;zoom,.36;x,43;y,12);
@@ -501,6 +534,19 @@ function GetPHighScoresFrameEval( pn )
 			end;
 			OnCommand=cmd(stoptweening;settext,"";sleep,.5;queuecommand,'RefreshText');
 			OffCommand=cmd(stoptweening;visible,false);
+		};
+
+		a[#a+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/hs_glow_machine.png") )..{
+			InitCommand=cmd(basezoom,.66);
+			OnCommand=function(self)
+				self:visible(false);
+				if PlayerHasNewPScoreMachineRecord == true then
+					self:sleep(.2);
+					self:queuecommand("Effect");
+				end;
+			end;
+			EffectCommand=cmd(y,14;glowshift;effectcolor1,1,1,0,1;effectcolor2,1,1,1,1;effectperiod,1;visible,true);
+			OffCommand=cmd(finishtweening;visible,false);
 		};
 		
 		
@@ -512,7 +558,7 @@ function GetPHighScoresFrameEval( pn )
 		LoopCommand=cmd(stoptweening;zoomx,1;diffusealpha,0;linear,1;diffusealpha,.1;linear,1;diffusealpha,0;queuecommand,'Loop');
 		OffCommand=cmd(stoptweening;zoomx,0;x,0);
 	};
-	
+
 	return a;
 	end;
 
@@ -534,6 +580,7 @@ t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/hs_glow_player.png") )
 	EffectCommand=cmd(x,cx-207;y,SCREEN_BOTTOM-102;glowshift;effectcolor1,1,1,0,1;effectcolor2,1,1,1,1;effectperiod,1;visible,true);
 	OffCommand=cmd(finishtweening;visible,false);
 };
+
 t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/hs_glow_machine.png") )..{
 	InitCommand=cmd(basezoom,.66);
 	OnCommand=function(self)
@@ -546,6 +593,7 @@ t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/hs_glow_machine.png") 
 	EffectCommand=cmd(x,cx-207;y,SCREEN_BOTTOM-72;glowshift;effectcolor1,1,1,0,1;effectcolor2,1,1,1,1;effectperiod,1;visible,true);
 	OffCommand=cmd(finishtweening;visible,false);
 };
+
 t[#t+1] = GetBallLevel( PLAYER_1, false )..{ 
 	InitCommand=cmd(basezoom,.67;x,cx-105;playcommand,"ShowUp";y,SCREEN_BOTTOM+110;linear,.2;y,SCREEN_BOTTOM-100;); 
 	OffCommand=cmd(stoptweening;playcommand,"Hide";y,SCREEN_BOTTOM-100;sleep,0;linear,.2;y,SCREEN_BOTTOM+100;queuecommand,'HideOnCommand')

@@ -102,6 +102,13 @@ local function PlayerName( Player )
 			Name = "SessionDataText";
 			InitCommand=cmd(horizalign,left;y,7;x,-70;zoom,.54;diffuse,color("#00FFFF"));
 		};
+		LoadActor(THEME:GetPathS("","Sounds/Voice")) .. {
+			Name = "StageBreakSound";
+			OnCommand=cmd(playcommand,'Play');
+			PlayCommand=function(self)
+				self:play();
+			end;
+		};
 	};
 	return t;
 end;
@@ -171,6 +178,8 @@ t[#t+1] = PlayerName( PLAYER_1 )..{
 				if SessionDataTable[P1CurrentProfile]["Kcals"] > 9999 then SessionDataTable[P1CurrentProfile]["Kcals"] = 9999 end;
 				SessionDataTable[P1CurrentProfile]["SongsPlayed"] = SessionDataTable[P1CurrentProfile]["SongsPlayed"] + 1;
 				if SessionDataTable[P1CurrentProfile]["SongsPlayed"] > 99 then SessionDataTable[P1CurrentProfile]["SongsPlayed"] = 99 end;
+			elseif screen == "ScreenStageBreak" then
+				self:GetChild("StageBreakSound"):play();
 			end;
 			SessionDataTable[P1CurrentProfile]["PlaytimeS"] = SessionDataTable[P1CurrentProfile]["PlaytimeS"] + P1CurrentSongTimeS;
 			SessionDataTable[P1CurrentProfile]["PlaytimeD"] = SessionDataTable[P1CurrentProfile]["PlaytimeD"] + P1CurrentSongTimeD;
@@ -341,6 +350,8 @@ t[#t+1] = PlayerName( PLAYER_2 )..{
 				if SessionDataTable[P2CurrentProfile]["Kcals"] > 9999 then SessionDataTable[P2CurrentProfile]["Kcals"] = 9999 end;
 				SessionDataTable[P2CurrentProfile]["SongsPlayed"] = SessionDataTable[P2CurrentProfile]["SongsPlayed"] + 1;
 				if SessionDataTable[P2CurrentProfile]["SongsPlayed"] > 99 then SessionDataTable[P2CurrentProfile]["SongsPlayed"] = 99 end;
+			elseif screen == "ScreenStageBreak" then
+
 			end;
 			SessionDataTable[P2CurrentProfile]["PlaytimeS"] = SessionDataTable[P2CurrentProfile]["PlaytimeS"] + P2CurrentSongTimeS;
 			SessionDataTable[P2CurrentProfile]["PlaytimeD"] = SessionDataTable[P2CurrentProfile]["PlaytimeD"] + P2CurrentSongTimeD;

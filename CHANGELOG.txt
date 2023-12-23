@@ -1,11 +1,36 @@
-StepP1 Plus v0.9.5 BETA-1 Release - ??? 2023:
+StepP1 Plus v0.9.5 BETA-1 Release - 23/12/2023:
 - More small UI changes by SofiaXY to closer match the original game
 - Added P.Score to the Evaluation Screen, based on the most recent scoring paradigm/formula: P.Score goes from 0 to 1.000.000 for all songs, where 1.000.000 = 100% Perfects (SSS). Max Combo accounts for 5000 out of the 1.000.000 points. Each Great is worth 6/10 of a Perfect, each Good is worth 2/10 of a Perfect, each Bad is worth 1/10 of a Perfect and Miss is worth nothing.
 - Added a P.Score Grade, displayed alongside the P.Score. Possible P.Grades are F, D, C, B, A, A+, AA, AA+, AAA, AAA+, S, S+, SS, SS+, SSS, SSS+, depending on how close the P.Score is to 1.000.00.
-- Subdivided the regular A grade into 4 different grades: Gold A (A with 5 misses or less), Blue A (A with 10 misses or less), Green A (A with 20 misses or less) and Red A (A with more than 20 misses). Broken A will still be shown if the player gets a stage break.
+- Added Plates (Perfect Game, Ultimate Game etc).
+- Subdivided the regular A grade into 4 different grades: Gold A, Blue A, Green A and Red A. Broken A will still be shown if the player gets a stage break.
 - The little grades on high scores that are shown on the song select screen will now be in black and white for B through F, and colored from A to SSS. The engine still doesn't support recording stage pass / stage break unfortunately, so that's the best we can do. Red A have a high probability of being a stage break.
+- Added P.Score High Scores to Screen Evaluation and Screen Select Music
+- Added Real Time Score display frame to Screen Gameplay. Also displays player name, chart level, Judge Difficulty and Scroll Speed.
+- Replaced the StepP1 logo on Screen Gameplay with the title of the song, and moved it to the background (will not be on top of arrows when playing Doubles)
+- Added the Song Status Meter, between the arrow receptors and the lifebar. The meter cursor will start moving when the first chart beat starts and will indicate how long until the song ends.
+- Colored Song Status Meter: starts as Blue (Perfect Color), will drop to Green (Great color) if you get at least one Great, Yellow (Good color) if you get at least one Good, Purple (Bad color) if you get at least one Bad. If you get a Miss, the bar loses all color. If your lifebar reaches zero and Stage Break is turned off, the bar will turn red until the end of the song
+- Added glass shattering sound that's triggered when your lifebar fails. The sound is directional and will only be played on the stereo side from the player who failed the lifebar (left stereo for P1, right stereo for P2)
+- Added glass shattering animation to the lifebar when your lifebar fails.
+- Removed all "fake loading screens". Screen transitions should be immediate, without artificial delays added.
+- Removed the Stage Break animation screen. If Stage Break is turned on, the player will be automatically sent back to the Song Select Screen and the "Hey, Why Don't You Just Get Up and Dance" voiceline will play.
+- Removed the Game Over animation. When exiting the Song Select screen, player will be moved instantly to the Title Screen.
+- Removed all "Next Stage" animations.
+- Added a yellow CO-OP difficulty ball for CO-OP charts. CO-OP charts should have StepsType pump-double or pump-routine and be of meter 99.
+- Added "number of players required" icon to CO-OP balls. CO-OP charts should have the following expressions on their #Description tag for the game to display the correct number displayed: 2P for 2 players, 3P for 3 players etc. Otherwise, ? will be shown.
+- Added cyan "Half-Double" difficulty ball. Will only apply to charts with StepsType pump-halfdouble
+- Vetoed BGA Dark from the Command List, since the engine always turns it off after every session, and it interferes with the brightness of newly added UI elements. Instead, directed players to change BGA Brightness on the Options Menu, which saves between sessions. Defaulted BGA Brightness to 20% (the equivalent to the previous StepP1 BGA Dark command).
+- Added Step Artist to ScreenSelectMusic
+- Added the difficulty ball to ScreenStageInformation
+- Added song duration to ScreenSelectMusic. To populate durations, the player must play the song at least once.
+- Removed the "hearts" icons from the player profile frames since the game doesn't support the hearts system.
+- Added "Session Information" to the profile frame. This will record some data about the current session for that profile, such as number of songs played, average level of songs played on single and double, time spent on songs and total kcals burned. This will save individually for each profile even if you exit back to the main menu and change profiles, but will reset to 0 upon closing StepP1.
 
-
+KNOWN ISSUES:
+- P.Score High Scores will only be saved if you also beat your Total Score High Score. That's an engine side limitation and there's not much that can be done to make them independent.
+- The Song Status meter cursor will not move if the chart doesn't have a specified #LASTSECONDHINT. The colored status indication will still function normally.
+- Expect bugs if more than one chart on the same .ssc have the same #DESCRIPTION tag, or no #DESCRIPTION.
+- Session Data is tied to Profile Name. If you rename your profile, you might lose or even transfer the current Session Data to another profile.
 
 
 StepP1 1.0.3 Release - June 9th 2023:
