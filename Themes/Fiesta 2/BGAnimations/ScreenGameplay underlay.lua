@@ -76,57 +76,6 @@ local function GetPlayerPosition( player )
 	end;
 end;
 
--- gameplayutils.lua
-if( GAMESTATE:IsSideJoined(PLAYER_1) or GAMESTATE:IsDemonstration() ) then
-t[#t+1] = GetPlayerJudgment(PLAYER_1)..{	
-	OnCommand=function(self)
-		self:stoptweening();
-		self:y(260);
-		
-		if IsNXForPlayer( PLAYER_1 ) then
-			if IsDropForPlayer( PLAYER_1 ) or IsUnderAttackForPlayer( PLAYER_1 ) then
-				self:y(SCREEN_CENTER_Y+130);
-			else
-				self:y(130);
-			end;
-		end;
-		
-		local xpos = GetPlayerPosition(PLAYER_1);
-		
-		if Center1Player() and not GAMESTATE:IsSideJoined(PLAYER_2) then
-			xpos = SCREEN_CENTER_X;
-		end;
-		
-		self:x(xpos);
-	end;
-}
-end;
-
-if( GAMESTATE:IsSideJoined(PLAYER_2) or GAMESTATE:IsDemonstration() ) then
-t[#t+1] = GetPlayerJudgment(PLAYER_2)..{
-	OnCommand=function(self)
-		self:stoptweening();
-		self:y(260);
-		
-		if IsNXForPlayer( PLAYER_2 ) then
-			if IsDropForPlayer( PLAYER_2 ) or IsUnderAttackForPlayer( PLAYER_2 ) then
-				self:y(SCREEN_CENTER_Y+130);
-			else
-				self:y(130);
-			end;
-		end;
-		
-		local xpos = GetPlayerPosition(PLAYER_2);
-		
-		if Center1Player() and not GAMESTATE:IsSideJoined(PLAYER_1) then
-			xpos = SCREEN_CENTER_X;
-		end;
-		self:x(xpos);
-	end;
-}
-end;
-
-
 if GAMESTATE:IsSideJoined(PLAYER_1) then
 	local P1PosX = GetPlayerPosition( PLAYER_1 );
 	local profile = PROFILEMAN:GetProfile(PLAYER_1);

@@ -14,7 +14,7 @@ t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/preview_frame") )..{
 
 -- Frame
 t[#t+1] = LoadActor( THEME:GetPathG("","ScreenSelectMusic/songprev_frame") )..{
-	InitCommand=cmd(blend,'BlendMode_Add';zoom,.66,draworder,-1);
+	InitCommand=cmd(blend,'BlendMode_Add';zoom,.66;draworder,-1);
 	OnCommand=cmd(stoptweening;sleep,.74;queuecommand,'Loop');
 	LoopCommand=cmd(stoptweening;diffusealpha,0;zoomx,.6;linear,.8;zoomx,.5;diffusealpha,.5;linear,.8;zoomx,.6;diffusealpha,0;queuecommand,'Loop');
 	CurrentSongChangedMessageCommand=cmd(stoptweening;diffusealpha,0;sleep,.74;queuecommand,'Loop');
@@ -176,37 +176,42 @@ t[#t+1] = Def.ActorFrame {
 	CurrentSongChangedMessageCommand=function(self)
 		local index = SCREENMAN:GetTopScreen():GetWheelCurrentIndex()+1;
 		local numitems = SCREENMAN:GetTopScreen():GetWheelNumItems();
-		
+		local total_d4 = self:GetChild("TOTAL_D4");
 		local total_d3 = self:GetChild("TOTAL_D3");
 		local total_d2 = self:GetChild("TOTAL_D2");
 		local total_d1 = self:GetChild("TOTAL_D1");
+		local curindex_d4 = self:GetChild("CURINDEX_D4");
 		local curindex_d3 = self:GetChild("CURINDEX_D3");
 		local curindex_d2 = self:GetChild("CURINDEX_D2");
 		local curindex_d1 = self:GetChild("CURINDEX_D1");
 		
-		if numitems < 999 then
-			local total_centenas = math.floor(numitems/100)*100;
-			local total_decenas = math.floor((numitems - total_centenas)/10)*10;
-			local total_unidad = math.floor(numitems - total_centenas - total_decenas);
-			
+		if numitems < 9999 then
+			local total_milhares = math.floor(numitems/1000)*1000;
+			local total_centenas = math.floor((numitems - total_milhares)/100)*100;
+			local total_decenas = math.floor((numitems - total_milhares - total_centenas)/10)*10;
+			local total_unidad = math.floor(numitems - total_milhares - total_centenas - total_decenas);
+			total_d4:setstate( math.floor(total_milhares/1000) );
 			total_d3:setstate( math.floor(total_centenas/100) );
 			total_d2:setstate( math.floor(total_decenas/10) );
 			total_d1:setstate( math.floor(total_unidad) );
 		else
+			total_d4:setstate( 9 );			
 			total_d3:setstate( 9 );
 			total_d2:setstate( 9 );
 			total_d1:setstate( 9 );
 		end;
 		
-		if index < 999 then
-			local curindex_centenas = math.floor(index/100)*100;
-			local curindex_decenas = math.floor((index - curindex_centenas)/10)*10;
-			local curindex_unidad = math.floor(index - curindex_centenas - curindex_decenas);
-			
+		if index < 9999 then
+			local curindex_milhares = math.floor(index/1000)*1000;
+			local curindex_centenas = math.floor((index - curindex_milhares)/100)*100;
+			local curindex_decenas = math.floor((index - curindex_milhares - curindex_centenas)/10)*10;
+			local curindex_unidad = math.floor(index - curindex_milhares - curindex_centenas - curindex_decenas);
+			curindex_d4:setstate( math.floor(curindex_milhares/1000) );
 			curindex_d3:setstate( math.floor(curindex_centenas/100) );
 			curindex_d2:setstate( math.floor(curindex_decenas/10) );
 			curindex_d1:setstate( math.floor(curindex_unidad) );
 		else
+			curindex_d4:setstate( 9 );
 			curindex_d3:setstate( 9 );
 			curindex_d2:setstate( 9 );
 			curindex_d1:setstate( 9 );
@@ -217,28 +222,36 @@ t[#t+1] = Def.ActorFrame {
 			InitCommand=cmd(y,1;basezoom,0.67);
 		};
 		LoadActor( THEME:GetPathG("","ScreenSelectMusic/SongIndexNumber 10x1") )..{
+			Name="TOTAL_D4";
+			InitCommand=cmd(pause;x,8;basezoom,.66;setstate,2);
+		};
+			LoadActor( THEME:GetPathG("","ScreenSelectMusic/SongIndexNumber 10x1") )..{
 			Name="TOTAL_D3";
-			InitCommand=cmd(pause;x,10;basezoom,.66;setstate,2);
+			InitCommand=cmd(pause;x,16;basezoom,.66;setstate,2);
 		};
 		LoadActor( THEME:GetPathG("","ScreenSelectMusic/SongIndexNumber 10x1") )..{
 			Name="TOTAL_D2";
-			InitCommand=cmd(pause;x,18;basezoom,.66);
+			InitCommand=cmd(pause;x,24;basezoom,.66);
 		};
 		LoadActor( THEME:GetPathG("","ScreenSelectMusic/SongIndexNumber 10x1") )..{
 			Name="TOTAL_D1";
-			InitCommand=cmd(pause;x,26;basezoom,.66);
+			InitCommand=cmd(pause;x,32;basezoom,.66);
+		};
+		LoadActor( THEME:GetPathG("","ScreenSelectMusic/SongIndexNumber 10x1") )..{
+			Name="CURINDEX_D4";
+			InitCommand=cmd(pause;x,-32;basezoom,.66);
 		};
 		LoadActor( THEME:GetPathG("","ScreenSelectMusic/SongIndexNumber 10x1") )..{
 			Name="CURINDEX_D3";
-			InitCommand=cmd(pause;x,-26;basezoom,.66);
+			InitCommand=cmd(pause;x,-24;basezoom,.66);
 		};
 		LoadActor( THEME:GetPathG("","ScreenSelectMusic/SongIndexNumber 10x1") )..{
 			Name="CURINDEX_D2";
-			InitCommand=cmd(pause;x,-18;basezoom,.66);
+			InitCommand=cmd(pause;x,-16;basezoom,.66);
 		};
 		LoadActor( THEME:GetPathG("","ScreenSelectMusic/SongIndexNumber 10x1") )..{
 			Name="CURINDEX_D1";
-			InitCommand=cmd(pause;x,-10;basezoom,.66);
+			InitCommand=cmd(pause;x,-8;basezoom,.66);
 		};
 	};
 }

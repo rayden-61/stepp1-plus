@@ -327,16 +327,17 @@ t[#t+1] = Def.ActorFrame {
 	MoveMessageCommand=function(self)
 		local index = SCREENMAN:GetTopScreen():GetCurrentGroupIndex();
 		local numitems = iRealNumGroups;
-		
+		local total_d3 = self:GetChild("TOTAL_D3");
 		local total_d2 = self:GetChild("TOTAL_D2");
 		local total_d1 = self:GetChild("TOTAL_D1");
+		local curindex_d3 = self:GetChild("CURINDEX_D3");
 		local curindex_d2 = self:GetChild("CURINDEX_D2");
 		local curindex_d1 = self:GetChild("CURINDEX_D1");
-		
-		if numitems < 99 then
-			local total_decenas = math.floor((numitems)/10)*10;
-			local total_unidad = math.floor(numitems - total_decenas);
-			
+		if numitems < 999 then
+			local total_centenas = math.floor((numitems)/100)*100;
+			local total_decenas = math.floor((numitems - total_centenas)/10)*10;
+			local total_unidad = math.floor(numitems - total_centenas - total_decenas);
+			total_d3:setstate( math.floor(total_centenas/100) );		
 			total_d2:setstate( math.floor(total_decenas/10) );
 			total_d1:setstate( math.floor(total_unidad) );
 		else
@@ -345,10 +346,11 @@ t[#t+1] = Def.ActorFrame {
 			total_d1:setstate( 9 );
 		end;
 		
-		if index < 99 then
-			local curindex_decenas = math.floor((index)/10)*10;
-			local curindex_unidad = math.floor(index - curindex_decenas);
-			
+		if index < 999 then
+			local curindex_centenas = math.floor((index)/100)*100;
+			local curindex_decenas = math.floor((index - curindex_centenas)/10)*10;
+			local curindex_unidad = math.floor(index - curindex_centenas - curindex_decenas);
+			curindex_d3:setstate( math.floor(curindex_centenas/100) );
 			curindex_d2:setstate( math.floor(curindex_decenas/10) );
 			curindex_d1:setstate( math.floor(curindex_unidad) );
 		else
@@ -364,12 +366,20 @@ t[#t+1] = Def.ActorFrame {
 			InitCommand=cmd(y,2;basezoom,0.67);
 		};
 		LoadActor( THEME:GetPathG("","ScreenSelectMusic/SongIndexNumber 10x1") )..{
-			Name="TOTAL_D2";
+			Name="TOTAL_D3";
 			InitCommand=cmd(pause;x,10;basezoom,.70);
 		};
 		LoadActor( THEME:GetPathG("","ScreenSelectMusic/SongIndexNumber 10x1") )..{
-			Name="TOTAL_D1";
+			Name="TOTAL_D2";
 			InitCommand=cmd(pause;x,18;basezoom,.70);
+		};
+		LoadActor( THEME:GetPathG("","ScreenSelectMusic/SongIndexNumber 10x1") )..{
+			Name="TOTAL_D1";
+			InitCommand=cmd(pause;x,26;basezoom,.70);
+		};
+		LoadActor( THEME:GetPathG("","ScreenSelectMusic/SongIndexNumber 10x1") )..{
+			Name="CURINDEX_D3";
+			InitCommand=cmd(pause;x,-26;basezoom,.70);
 		};
 		LoadActor( THEME:GetPathG("","ScreenSelectMusic/SongIndexNumber 10x1") )..{
 			Name="CURINDEX_D2";
