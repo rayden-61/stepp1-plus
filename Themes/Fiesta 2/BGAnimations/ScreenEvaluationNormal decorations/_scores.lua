@@ -60,9 +60,9 @@ if GAMESTATE:IsSideJoined(PLAYER_1) then
 	t[#t+1] = DrawRollingNumberP1( WideScale(66, 115), init_pos+delta*8, math.floor( kcal ), 'HorizAlign_Left', 2.64 )..{InitCommand=cmd(zoom,.84);};
 	t[#t+1] = LoadFont("_karnivore lite white 20px")..{ InitCommand=cmd(settext,".";y,init_pos+delta*8;x,WideScale(101, 150);zoom,.84;diffusealpha,0;sleep,2.64;diffusealpha,1); };
 	--p. grade
-	t[#t+1] = LoadFont("pbhdkarnivore 24px")..{ InitCommand=cmd(settext,pgrade;y,init_pos+delta*6;x,WideScale(261, 310);zoom,.84;diffusealpha,0;sleep,4.2;diffusealpha,1;diffuse,color(pgradecolor)); };
+	t[#t+1] = LoadFont("pbhdkarnivore 24px")..{ InitCommand=cmd(settext,pgrade;y,init_pos+delta*6;x,WideScale(221, 270);zoom,.84;diffusealpha,0;sleep,4.2;diffusealpha,1;diffuse,color(pgradecolor)); };
 	--plate
-	t[#t+1] = LoadFont("pbhdkarnivore 24px")..{ InitCommand=cmd(settext,plate;y,init_pos-delta;x,WideScale(171, 220);zoom,.84;diffusealpha,0;sleep,4.2;diffusealpha,1;diffuse,color(platecolor)); };
+	t[#t+1] = LoadFont("pbhdkarnivore 24px")..{ InitCommand=cmd(settext,plate;y,init_pos-delta;x,WideScale(221, 270);zoom,.84;diffusealpha,0;sleep,4.2;diffusealpha,1;diffuse,color(platecolor)); };
 
 end;
 
@@ -96,9 +96,9 @@ if GAMESTATE:IsSideJoined(PLAYER_2) then
 	t[#t+1] = DrawRollingNumberP1( SCREEN_RIGHT-WideScale(106, 155), init_pos+delta*8, math.floor( kcal ), 'HorizAlign_Right', 2.64 )..{InitCommand=cmd(zoom,.84);};
 	t[#t+1] = LoadFont("_karnivore lite white 20px")..{ InitCommand=cmd(settext,".";y,init_pos+delta*8;x,SCREEN_RIGHT-WideScale(101, 150);zoom,.84;diffusealpha,0;sleep,2.64;diffusealpha,1); };
 	--p. grade
-	t[#t+1] = LoadFont("pbhdkarnivore 24px")..{ InitCommand=cmd(settext,pgrade;y,init_pos+delta*6;x,SCREEN_RIGHT-WideScale(261, 310);zoom,.84;diffusealpha,0;sleep,4.2;diffusealpha,1;diffuse,color(pgradecolor)); };
+	t[#t+1] = LoadFont("pbhdkarnivore 24px")..{ InitCommand=cmd(settext,pgrade;y,init_pos+delta*6;x,SCREEN_RIGHT-WideScale(221, 270);zoom,.84;diffusealpha,0;sleep,4.2;diffusealpha,1;diffuse,color(pgradecolor)); };
 	--plate
-	t[#t+1] = LoadFont("pbhdkarnivore 24px")..{ InitCommand=cmd(settext,plate;y,init_pos-delta;x,SCREEN_RIGHT-WideScale(171, 220);zoom,.84;diffusealpha,0;sleep,4.2;diffusealpha,1;diffuse,color(platecolor)); };
+	t[#t+1] = LoadFont("pbhdkarnivore 24px")..{ InitCommand=cmd(settext,plate;y,init_pos-delta;x,SCREEN_RIGHT-WideScale(221, 270);zoom,.84;diffusealpha,0;sleep,4.2;diffusealpha,1;diffuse,color(platecolor)); };
 
 end;
 
