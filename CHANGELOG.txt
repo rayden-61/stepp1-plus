@@ -1,3 +1,8 @@
+StepP1 Plus v1.0.0 Release - 12/01/2024:
+- Fixed duplicated judgment animation.
+- Better alignment of grades and plate on ScreenEvaluation.
+- Increased song count limit on ScreenSelectMusic from 999 to 9999 and increase Song Groups count from 99 to 999.
+
 StepP1 Plus v0.9.5 BETA-1 Release - 23/12/2023:
 - More small UI changes by SofiaXY to closer match the original game
 - Added P.Score to the Evaluation Screen, based on the most recent scoring paradigm/formula: P.Score goes from 0 to 1.000.000 for all songs, where 1.000.000 = 100% Perfects (SSS). Max Combo accounts for 5000 out of the 1.000.000 points. Each Great is worth 6/10 of a Perfect, each Good is worth 2/10 of a Perfect, each Bad is worth 1/10 of a Perfect and Miss is worth nothing.
