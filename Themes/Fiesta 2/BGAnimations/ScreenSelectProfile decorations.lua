@@ -42,7 +42,7 @@ t[#t+1] = LoadFont("_unispace 18px")..{
 		self:xy(SCREEN_LEFT+16, SCREEN_TOP+4)
 		self:horizalign(left)
         self:vertalign(top)
-		self:settext("SP1+_V0.9.5_b1")
+		self:settext("SP1+_V1.0")
 		self:shadowlength(1)
 		self:zoom(0.5)
 	end;
